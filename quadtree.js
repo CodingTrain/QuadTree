@@ -47,15 +47,15 @@ class QuadTree {
   subdivide() {
     let x = this.boundary.x;
     let y = this.boundary.y;
-    let w = this.boundary.w;
-    let h = this.boundary.h;
-    let ne = new Rectangle(x + w / 2, y - h / 2, w / 2, h / 2);
+    let w = this.boundary.w / 2;
+    let h = this.boundary.h / 2;
+    let ne = new Rectangle(x + w, y - h, w, h);
     this.northeast = new QuadTree(ne, this.capacity);
-    let nw = new Rectangle(x - w / 2, y - h / 2, w / 2, h / 2);
+    let nw = new Rectangle(x - w, y - h, w, h);
     this.northwest = new QuadTree(nw, this.capacity);
-    let se = new Rectangle(x + w / 2, y + h / 2, w / 2, h / 2);
+    let se = new Rectangle(x + w, y + h, w, h);
     this.southeast = new QuadTree(se, this.capacity);
-    let sw = new Rectangle(x - w / 2, y + h / 2, w / 2, h / 2);
+    let sw = new Rectangle(x - w, y + h, w, h);
     this.southwest = new QuadTree(sw, this.capacity);
     this.divided = true;
   }
