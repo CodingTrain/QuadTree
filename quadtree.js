@@ -86,7 +86,7 @@ class QuadTree {
     }
 
     if (!this.boundary.intersects(range)) {
-      return;
+      return found;
     }
 
     for (let p of this.points) {
