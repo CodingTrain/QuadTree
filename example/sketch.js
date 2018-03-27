@@ -31,8 +31,9 @@ function draw() {
   // let range = new Rectangle(mouseX, mouseY, 25, 25);
   let range = new Circle(mouseX, mouseY, 25);
 
-  // draw the shape(i.e Rectangle, Circle etc.)
-  range.show();
+
+  ellipse(range.x, range.y, range.r * 2);
+
 
   let points = qtree.query(range);
   for (let p of points) {

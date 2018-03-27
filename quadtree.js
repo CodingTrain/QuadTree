@@ -27,33 +27,11 @@ class Rectangle {
   }
 
     intersects(range) {
-
-      // get the name of the range's class (i.e Rectangle, Circle etc.)
-      var is_Rect = range.constructor.name;
-
-      // if the range is of class Rectangle
-      if(is_Rect == 'Rectangle'){
-        return !(range.x - range.w > this.x + this.w ||
-                 range.x + range.w < this.x - this.w ||
-                 range.y - range.h > this.y + this.h ||
-                 range.y + range.h < this.y - this.h);
-      }else {
-          // if the range is of class Circle
-          if(is_Rect == 'Circle'){
-
-              // call the intersects function of the range
-              // this is done in order to have each class
-              // having its own intersects and not have here
-              // a huge function that contains all of the
-              // intersection checks
-              return range.intersects(this);
-          }
+      return !(range.x - range.w > this.x + this.w ||
+                  range.x + range.w < this.x - this.w ||
+                  range.y - range.h > this.y + this.h ||
+                  range.y + range.h < this.y - this.h);
       }
-    }
-
-    show(){
-        rect(this.x, this.y, this.w * 2, this.h * 2);
-    }
 
 
 }
@@ -100,10 +78,6 @@ class Circle {
 
         // intersection on the edge of the circle
         return edges <= r_squared;
-    }
-
-    show(){
-        ellipse(this.x, this.y, this.r * 2);
     }
 
 }
@@ -161,9 +135,13 @@ class QuadTree {
     if (!found) {
       found = [];
     }
-    if (!this.boundary.intersects(range)) {
-      return;
-    } else {
+    // if (!this.boundary.intersects(range)) {
+    //   return;
+      // }
+      if(!range.intersects(this.boundary)){
+          return;
+      }
+      else {
       for (let p of this.points) {
         if (range.contains(p)) {
           found.push(p);
