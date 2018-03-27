@@ -134,20 +134,13 @@ class QuadTree {
 
     if (!range.intersects(this.boundary)) {
       return found;
-    } else {
-      for (let p of this.points) {
-        if (range.contains(p)) {
-          found.push(p);
-        }
-      }
-      if (this.divided) {
-        this.northwest.query(range, found);
-        this.northeast.query(range, found);
-        this.southwest.query(range, found);
-        this.southeast.query(range, found);
-      }
     }
 
+    for (let p of this.points) {
+      if (range.contains(p)) {
+        found.push(p);
+      }
+    }
     if (this.divided) {
       this.northwest.query(range, found);
       this.northeast.query(range, found);
