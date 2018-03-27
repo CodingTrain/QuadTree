@@ -26,11 +26,12 @@ class Rectangle {
       point.y <= this.y + this.h);
   }
 
+
     intersects(range) {
       return !(range.x - range.w > this.x + this.w ||
-                  range.x + range.w < this.x - this.w ||
-                  range.y - range.h > this.y + this.h ||
-                  range.y + range.h < this.y - this.h);
+               range.x + range.w < this.x - this.w ||
+               range.y - range.h > this.y + this.h ||
+               range.y + range.h < this.y - this.h);
       }
 
 
@@ -79,7 +80,6 @@ class Circle {
         // intersection on the edge of the circle
         return edges <= r_squared;
     }
-
 }
 
 class QuadTree {
@@ -95,6 +95,7 @@ class QuadTree {
     let y = this.boundary.y;
     let w = this.boundary.w / 2;
     let h = this.boundary.h / 2;
+
     let ne = new Rectangle(x + w, y - h, w, h);
     this.northeast = new QuadTree(ne, this.capacity);
     let nw = new Rectangle(x - w, y - h, w, h);
@@ -103,11 +104,11 @@ class QuadTree {
     this.southeast = new QuadTree(se, this.capacity);
     let sw = new Rectangle(x - w, y + h, w, h);
     this.southwest = new QuadTree(sw, this.capacity);
+
     this.divided = true;
   }
 
   insert(point) {
-
     if (!this.boundary.contains(point)) {
       return false;
     }
@@ -115,19 +116,15 @@ class QuadTree {
     if (this.points.length < this.capacity) {
       this.points.push(point);
       return true;
-    } else {
-      if (!this.divided) {
-        this.subdivide();
-      }
-      if (this.northeast.insert(point)) {
-        return true;
-      } else if (this.northwest.insert(point)) {
-        return true;
-      } else if (this.southeast.insert(point)) {
-        return true;
-      } else if (this.southwest.insert(point)) {
-        return true;
-      }
+    }
+
+    if (!this.divided) {
+      this.subdivide();
+    }
+
+    if (this.northeast.insert(point) || this.northwest.insert(point) ||
+      this.southeast.insert(point) || this.southwest.insert(point)) {
+      return true;
     }
   }
 
@@ -135,9 +132,7 @@ class QuadTree {
     if (!found) {
       found = [];
     }
-    // if (!this.boundary.intersects(range)) {
-    //   return;
-      // }
+
       if(!range.intersects(this.boundary)){
           return found;
       }
@@ -154,7 +149,14 @@ class QuadTree {
         this.southeast.query(range, found);
       }
     }
+
+    if (this.divided) {
+      this.northwest.query(range, found);
+      this.northeast.query(range, found);
+      this.southwest.query(range, found);
+      this.southeast.query(range, found);
+    }
+
     return found;
   }
-
 }
