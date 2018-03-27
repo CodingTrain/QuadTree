@@ -58,6 +58,11 @@ class QuadTree {
     let sw = new Rectangle(x - w, y + h, w, h);
     this.southwest = new QuadTree(sw, this.capacity);
     this.divided = true;
+    
+    for(let p of this.points) {
+        this.insert(p);
+    }
+    this.points = [];
   }
 
   insert(point) {
@@ -66,7 +71,7 @@ class QuadTree {
       return false;
     }
 
-    if (this.points.length < this.capacity) {
+    if (this.points.length < this.capacity && !this.divided) {
       this.points.push(point);
       return true;
     } else {
