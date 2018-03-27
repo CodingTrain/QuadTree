@@ -101,6 +101,17 @@ class QuadTree {
     this.divided = false;
   }
 
+  clear() {
+    if (this.divided) {
+      delete this.northeast;
+      delete this.northwest;
+      delete this.southeast;
+      delete this.southwest;
+    }
+    this.points = [];
+    this.divided = false;
+  }
+
   subdivide() {
     let x = this.boundary.x;
     let y = this.boundary.y;
@@ -158,6 +169,24 @@ class QuadTree {
       this.northeast.query(range, found);
       this.southwest.query(range, found);
       this.southeast.query(range, found);
+    }
+
+    return found;
+  }
+
+  all(found) {
+    if (!found) {
+      found = [];
+    }
+
+    for (let p of this.points) {
+      found.push(p);
+    }
+    if (this.divided) {
+      this.northwest.all(found);
+      this.northeast.all(found);
+      this.southwest.all(found);
+      this.southeast.all(found);
     }
 
     return found;
