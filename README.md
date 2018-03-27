@@ -1,2 +1,2 @@
 # QuadTree
-A QuadTree "library" (?) for JavaScript
+A QuadTree example for JavaScript with p5.js.
