@@ -10,9 +10,10 @@ let particles = []; // ArrayList for all "things"
 
 let framerateP;
 let withQuadTree;
+let total;
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(600, 400);
 
   // Put 2000 Things in the system
   for (let i = 0; i < particleCount; i++) {
@@ -22,6 +23,18 @@ function setup() {
   framerateP = createP('framerate: ');
   withQuadTree = createCheckbox('using quadtree');
   withQuadTree.checked(true);
+  let totalP = createP(particleCount);
+  total = createSlider(1, 5000, 1000);
+  total.input(function() {
+    particleCount = total.value();
+    totalP.html(particleCount);
+    while (particleCount > particles.length) {
+      particles.push(new Particle(random(width), random(height)));
+    }
+    if (particleCount < particles.length) {
+      particles.splice(0, particles.length - particleCount);
+    }
+  });
 
 }
 
