@@ -108,3 +108,5 @@ class QuadTree {
   }
 
 }
+
+((module ? module.exports = { Point, Rectangle, QuadTree } : 0));
