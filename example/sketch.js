@@ -27,8 +27,13 @@ function draw() {
 
   stroke(0, 255, 0);
   rectMode(CENTER);
-  let range = new Rectangle(mouseX, mouseY, 25, 25);
-  rect(range.x, range.y, range.w * 2, range.h * 2);
+
+  // let range = new Rectangle(mouseX, mouseY, 25, 25);
+  let range = new Circle(mouseX, mouseY, 25);
+
+  // draw the shape(i.e Rectangle, Circle etc.)
+  range.show();
+
   let points = qtree.query(range);
   for (let p of points) {
     strokeWeight(4);
