@@ -21,7 +21,7 @@ describe('QuadTree', () => {
     });
     it('throws exception when capacity is less than 1', () => {
       let rect = new Rectangle(100, 100, 10, 10);
-      expect(() => { new QuadTree(rect, 0) }).to.throw(TypeError);
+      expect(() => { new QuadTree(rect, 0) }).to.throw(RangeError);
     });
     it('throws exception when capacity is less than 1 with correct message', () => {
       let rect = new Rectangle(100, 100, 10, 10);
@@ -179,5 +179,5 @@ describe('QuadTree', () => {
       });
     });
   });
-  
+
 });
