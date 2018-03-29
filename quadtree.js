@@ -5,9 +5,10 @@
 // QuadTree
 
 class Point {
-  constructor(x, y) {
+  constructor(x, y, data) {
     this.x = x;
     this.y = y;
+    this.userData = data;
   }
 }
 
@@ -43,14 +44,15 @@ class Circle {
     this.x = x;
     this.y = y;
     this.r = r;
+    this.rSquared = this.r * this.r;
   }
 
   contains(point) {
     // check if the point is in the circle by checking if the euclidean distance of
     // the point and the center of the circle if smaller or equal to the radius of
     // the circle
-    dist = Math.sqrt(Math.pow((point.x - this.x), 2) + Math.pow((point.y - this.y), 2));
-    return dist <= this.r;
+    let d = Math.pow((point.x - this.x), 2) + Math.pow((point.y - this.y), 2);
+    return d <= this.rSquared;
   }
 
   intersects(range) {
@@ -60,9 +62,6 @@ class Circle {
 
     // radius of the circle
     var r = this.r;
-
-    // radius of circle squared
-    var r_squared = Math.pow(this.r, 2);
 
     var w = range.w;
     var h = range.h;
@@ -78,7 +77,7 @@ class Circle {
       return true;
 
     // intersection on the edge of the circle
-    return edges <= r_squared;
+    return edges <= this.rSquared;
   }
 }
 
