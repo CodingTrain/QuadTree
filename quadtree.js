@@ -105,20 +105,27 @@ class QuadTree {
     this.southwest = new QuadTree(sw, this.capacity);
 
     this.divided = true;
+                
+    for (let p of this.points) {
+      this.insert(p);
+    }
+        
+    this.points = null;
   }
 
   insert(point) {
     if (!this.boundary.contains(point)) {
       return false;
     }
-
-    if (this.points.length < this.capacity) {
-      this.points.push(point);
-      return true;
-    }
-
+    
     if (!this.divided) {
-      this.subdivide();
+      this.points.push(point);
+    
+      if (this.points.length > this.capacity) {
+        this.subdivide();
+      }
+      
+      return true;
     }
 
     if (this.northeast.insert(point) || this.northwest.insert(point) ||
@@ -136,18 +143,19 @@ class QuadTree {
       return found;
     }
 
-    for (let p of this.points) {
-      if (range.contains(p)) {
-        found.push(p);
-      }
-    }
     if (this.divided) {
       this.northwest.query(range, found);
       this.northeast.query(range, found);
       this.southwest.query(range, found);
       this.southeast.query(range, found);
+    } else {
+      for (let p of this.points) {
+        if (range.contains(p)) {
+          found.push(p);
+        }
+      }
     }
-
+    
     return found;
   }
 }
