@@ -11,13 +11,15 @@ let qtree;
 function setup() {
   createCanvas(400, 400);
   background(255);
+
   let boundary = new Rectangle(200, 200, 200, 200);
   qtree = new QuadTree(boundary, 4);
   for (let i = 0; i < 300; i++) {
-    let x = randomGaussian(width / 2, width / 8);
-    let y = randomGaussian(height / 2, height / 8);
-    let p = new Point(x, y);
-    qtree.insert(p);
+  let x = randomGaussian(width / 2, width / 8);
+  let y = randomGaussian(height / 2, height / 8);
+
+  let p = new Point(x, y);
+  qtree.insert(p);
   }
 }
 
@@ -40,6 +42,12 @@ function draw() {
     strokeWeight(4);
     point(p.x, p.y);
   }
+}
+
+function mouseDragged(){
+    for (let i = 0; i < 10; i++){
+        qtree.insert(new Point(mouseX, mouseY));
+    }
 }
 
 function show(qtree) {

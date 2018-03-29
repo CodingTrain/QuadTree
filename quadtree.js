@@ -151,4 +151,39 @@ class QuadTree {
 
     return found;
   }
+
+
+  removeInRange(range){
+      if(!range.intersects(this.boundary)){
+          return false;
+      }
+
+      this.points = this.points.filter(point => !range.contains(point));
+
+      if(this.divided){
+          this.northwest.removeInRange(range);
+          this.northeast.removeInRange(range);
+          this.southwest.removeInRange(range);
+          this.southeast.removeInRange(range);
+      }
+  }
+
+  merge(quadTree){
+      for (let p of quadTree.points){
+          this.insert(p);
+      }
+      if (quadTree.divided){
+          this.merge(quadTree.northwest);
+          this.merge(quadTree.northeast);
+          this.merge(quadTree.southwest);
+          this.merge(quadTree.southeast);
+      }
+  }
+
+    getAllPoints(){
+        results = [];
+        for (let p of this.points){
+            results.push(p);
+        }
+    }
 }
