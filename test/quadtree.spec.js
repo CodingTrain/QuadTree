@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const { QuadTree, Rectangle, Point } = require('../quadtree');
+const { QuadTree, Rectangle, Point, Circle } = require('../quadtree');
 
 describe('QuadTree', () => {
   describe('on construction', () => {
@@ -190,6 +190,118 @@ describe('QuadTree', () => {
         let temp = quadtree.northeast;
         quadtree.insert(new Point(100 + 10, 200 + 10));
         expect(quadtree.northeast).to.equal(temp);
+      });
+    });
+  });
+  describe('query', () => {
+    let quadtree;
+    let points;
+    beforeEach(() => {
+      quadtree = new QuadTree(new Rectangle(0, 0, 100, 100), 4);
+      points = [
+        new Point(-25, -25),
+        new Point(25, -25),
+        new Point(-25, 25),
+        new Point(25, 25)
+      ];
+      points.forEach(point => quadtree.insert(point));
+    });
+    it('returns an array when not passed in an array', () => {
+      let found = quadtree.query(new Rectangle(50, 50, 10, 10));
+      expect(found).to.be.an('array');
+    });
+    it('returns the array that is passed into it', () => {
+      let old = [];
+      let found = quadtree.query(new Rectangle(50, 50, 10, 10), old);
+      expect(found).to.equal(old);
+    });
+    it('returns an empty array when no points should match', () => {
+      let found = quadtree.query(new Rectangle(0, 0, 10, 10));
+      expect(found).to.have.length(0);
+    });
+    it('returns no items when there is no overlap', () => {
+      let found = quadtree.query(new Rectangle(1000, 1000, 10, 10));
+      expect(found).to.have.length(0);
+    });
+    it('returns an array with one point when search should be successful', () => {
+      let found = quadtree.query(new Rectangle(25, 25, 10, 10));
+      expect(found).to.have.length(1);
+    });
+    it('returns an array with the correct point when search should be successful', () => {
+      let found = quadtree.query(new Rectangle(25, 25, 10, 10));
+      expect(found).to.contain(points[3]);
+    });
+    describe('when a subdivision occurs', () => {
+      beforeEach(() => {
+        points.push(new Point(-26, -26));
+        points.push(new Point(26, -26));
+        points.push(new Point(-26, 26));
+        points.push(new Point(26, 26));
+        quadtree.insert(points[4]);
+        quadtree.insert(points[5]);
+        quadtree.insert(points[6]);
+        quadtree.insert(points[7]);
+        expect(quadtree.divided).to.be.true;
+      });
+      it('returns correct number of northwest points', () => {
+        let found = quadtree.query(new Rectangle(-25, 25, 10, 10));
+        expect(found).to.have.length(2);
+      });
+      it('returns all appropriate northwest points', () => {
+        let found = quadtree.query(new Rectangle(-25, 25, 10, 10));
+        expect(found).to.contain(points[2]);
+        expect(found).to.contain(points[6]);
+      });
+      it('returns correct number of northeast points', () => {
+        let found = quadtree.query(new Rectangle(25, 25, 10, 10));
+        expect(found).to.have.length(2);
+      });
+      it('returns all appropriate northeast points', () => {
+        let found = quadtree.query(new Rectangle(25, 25, 10, 10));
+        expect(found).to.contain(points[3]);
+        expect(found).to.contain(points[7]);
+      });
+      it('returns correct number of southhwest points', () => {
+        let found = quadtree.query(new Rectangle(-25, -25, 10, 10));
+        expect(found).to.have.length(2);
+      });
+      it('returns all appropriate southwest points', () => {
+        let found = quadtree.query(new Rectangle(-25, -25, 10, 10));
+        expect(found).to.contain(points[0]);
+        expect(found).to.contain(points[4]);
+      });
+      it('returns correct number of southeast points', () => {
+        let found = quadtree.query(new Rectangle(25, -25, 10, 10));
+        expect(found).to.have.length(2);
+      });
+      it('returns all appropriate southeast points', () => {
+        let found = quadtree.query(new Rectangle(25, -25, 10, 10));
+        expect(found).to.contain(points[1]);
+        expect(found).to.contain(points[5]);
+      });
+      it('returns correct number of points from multiple regions', () => {
+        let found = quadtree.query(new Rectangle(0, -25, 50, 10));
+        expect(found).to.have.length(4);
+      });
+      it('returns correct points from multiple regions', () => {
+        let found = quadtree.query(new Rectangle(0, -25, 50, 10));
+        expect(found).to.contain(points[0]);
+        expect(found).to.contain(points[4]);
+        expect(found).to.contain(points[1]);
+        expect(found).to.contain(points[5]);
+      });
+      it('returns no points as expected with a Circle', () => {
+        let found = quadtree.query(new Circle(0, 0, 10));
+        expect(found).to.have.length(0);
+      });
+      it('returns correct number of points with a Circle', () => {
+        let found = quadtree.query(new Circle(25, 25, 10));
+        expect(found).to.have.length(2);
+      });
+      it('returns correct points with a Circle', () => {
+        let found = quadtree.query(new Circle(25, 25, 10));
+        expect(found).to.contain(points[3]);
+        expect(found).to.contain(points[7]);
       });
     });
   });
