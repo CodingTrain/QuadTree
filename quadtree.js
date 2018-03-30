@@ -86,6 +86,12 @@ class QuadTree {
     if (!boundary) {
       throw TypeError('boundary is null or undefined');
     }
+    if (!(boundary instanceof Rectangle)) {
+      throw TypeError('boundary should be a Rectangle');
+    }
+    if (typeof capacity !== 'number') {
+      throw TypeError(`capacity should be a number but is a ${typeof capacity}`);
+    }
     if (capacity < 1) {
       throw RangeError('capacity must be greater than 0');
     }

@@ -10,10 +10,16 @@ describe('QuadTree', () => {
     });
     it('throws exception when boundary not set', () => {
       expect(() => { new QuadTree(null, 3) }).to.throw(TypeError);
-    })
+    });
     it('throws exception when boundary not set with correct message', () => {
       expect(() => { new QuadTree(null, 3) }).to.throw('boundary is null or undefined');
-    })
+    });
+    it('throws exception when boundary is not a Rectangle with correct message', () => {
+      expect(() => { new QuadTree('not a boundary object', 3) }).to.throw('boundary should be a Rectangle');
+    });
+    it('throws type error when boundary is not a Rectangle', () => {
+      expect(() => { new QuadTree('not a boundary object', 3) }).to.throw(TypeError);
+    });
     it('assigns capacity', () => {
       let rect = new Rectangle(100, 100, 10, 10);
       let quadtree = new QuadTree(rect, 4);
@@ -26,6 +32,14 @@ describe('QuadTree', () => {
     it('throws exception when capacity is less than 1 with correct message', () => {
       let rect = new Rectangle(100, 100, 10, 10);
       expect(() => { new QuadTree(rect, 0) }).to.throw('capacity must be greater than 0');
+    });
+    it('throws exception when capacity is not a number', () => {
+      let rect = new Rectangle(100, 100, 10, 10);
+      expect(() => { new QuadTree(rect, 'test') }).to.throw(TypeError);
+    });
+    it('throws exception with correct message when capacity is not a number', () => {
+      let rect = new Rectangle(100, 100, 10, 10);
+      expect(() => { new QuadTree(rect, 'test') }).to.throw('capacity should be a number but is a string');
     });
     it('assigns empty array to points', () => {
       let rect = new Rectangle(100, 100, 30, 30);
@@ -179,5 +193,4 @@ describe('QuadTree', () => {
       });
     });
   });
-
 });
