@@ -82,9 +82,21 @@ class Circle {
 }
 
 class QuadTree {
-  constructor(boundary, n) {
+  constructor(boundary, capacity) {
+    if (!boundary) {
+      throw TypeError('boundary is null or undefined');
+    }
+    if (!(boundary instanceof Rectangle)) {
+      throw TypeError('boundary should be a Rectangle');
+    }
+    if (typeof capacity !== 'number') {
+      throw TypeError(`capacity should be a number but is a ${typeof capacity}`);
+    }
+    if (capacity < 1) {
+      throw RangeError('capacity must be greater than 0');
+    }
     this.boundary = boundary;
-    this.capacity = n;
+    this.capacity = capacity;
     this.points = [];
     this.divided = false;
   }
@@ -150,4 +162,8 @@ class QuadTree {
 
     return found;
   }
+
 }
+
+((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
+
