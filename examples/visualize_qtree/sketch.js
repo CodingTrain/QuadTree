@@ -3,8 +3,10 @@
 // http://patreon.com/codingtrain
 
 // QuadTree
-// [video url 1]
-// [video url 2]
+// Coding Challenge #98.1: Quadtree - Part 1:
+// https://www.youtube.com/watch?v=OJxEcs0w_kE
+// Coding Challenge #98.2: Quadtree - Part 2:
+// https://www.youtube.com/watch?v=QQx_NmCIuCY&t=70s
 
 let qtree;
 
