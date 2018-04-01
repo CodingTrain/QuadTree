@@ -133,7 +133,7 @@ class QuadTree {
     if (!this.divided) {
       this.points.push(point);
       
-      if (this.points.length > this.capacity) {      
+      if (this.points.length >= this.capacity) {      
         this.subdivide();
       }
     
