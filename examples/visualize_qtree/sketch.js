@@ -31,10 +31,10 @@ function draw() {
   let range = new Circle(mouseX, mouseY, 64);
   ellipse(range.x, range.y, range.r * 2);
 
+  stroke(0, 255, 0);
+  strokeWeight(4);
   let points = qtree.query(range);
   for (let p of points) {
-    stroke(0, 255, 0);
-    strokeWeight(4);
     point(p.x, p.y);
   }
 }
