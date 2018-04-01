@@ -118,7 +118,7 @@ class QuadTree {
     
     this.divided = true;
     
-    for (let p of this.point) {
+    for (let p of this.points) {
       this.insert(p);
     }
     
