@@ -115,8 +115,14 @@ class QuadTree {
     this.southeast = new QuadTree(se, this.capacity);
     let sw = new Rectangle(x - w, y + h, w, h);
     this.southwest = new QuadTree(sw, this.capacity);
-
+    
     this.divided = true;
+    
+    for (let p of this.points) {
+      this.insert(p);
+    }
+    
+    this.points = null;
   }
 
   insert(point) {
@@ -124,13 +130,14 @@ class QuadTree {
       return false;
     }
 
-    if (this.points.length < this.capacity) {
-      this.points.push(point);
-      return true;
-    }
-
     if (!this.divided) {
-      this.subdivide();
+      this.points.push(point);
+      
+      if (this.points.length >= this.capacity) {      
+        this.subdivide();
+      }
+    
+      return true;
     }
 
     if (this.northeast.insert(point) || this.northwest.insert(point) ||
