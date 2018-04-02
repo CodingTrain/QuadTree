@@ -79,8 +79,8 @@ class Engine {
     let d = dist(boid.x, boid.y, x, y);
     let c = map(d, 0, interactionRadius, 1.5, 0.5) / d;
     let f = {
-      x : (x-boid.x) * c,
-      y : (y-boid.y) * c
+      x : (boid.x - x) * c,
+      y : (boid.y - y) * c
     };
     return f;
   }
