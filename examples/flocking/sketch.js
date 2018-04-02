@@ -28,7 +28,11 @@ const WIDTH = 600;
 const HEIGHT = 400;
 
 function setup() {
-  createCanvas(WIDTH, HEIGHT);
+  let canvas = createCanvas(WIDTH, HEIGHT);
+  canvas.mouseClicked(function ()  {
+    // Add a new boid
+    boids.push(new Boid(mouseX, mouseY));
+  });
   // Boids try to go in the same direction
   settings.add('alignment',0,2,0.2,0.1);
   // Boids want to stay close to each other
@@ -44,10 +48,7 @@ function setup() {
   }
 }
 
-function mouseClicked() {
-  // Add a new boid
-  boids.push(new Boid(mouseX, mouseY));
-}
+
 
 function draw() {
   let border = new Rectangle(WIDTH/2, HEIGHT/2, WIDTH/2, HEIGHT/2);
