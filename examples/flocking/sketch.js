@@ -17,10 +17,10 @@ class Settings {
     label.parent(param);
     // let lineBreak = createSpan('<br/>');
     // lineBreak.parent(param);
+    // TODO: make slider and text stay on the same line
   }
 }
 let settings = new Settings();
-
 let engine = new Engine();
 
 var boids = [];
@@ -37,16 +37,16 @@ function setup() {
   settings.add('separation',0,2,1.5,0.1);
   // Boids move a bit randomly
   settings.add('noise',0,2,1,0.1);
-  // TODO: Boids try to avoid obstacles
+  // TODO: Boids try to avoid obstacles ?
   // settings.add('avoid',0,2,1,0.1);
   for (let x = 1; x < 100; x ++) {
-    boids.push(new Boid(random(0,WIDTH), random(0,HEIGHT), random(0,TWO_PI)));
+    boids.push(new Boid(random(0,WIDTH), random(0,HEIGHT)));
   }
 }
 
 function mouseClicked() {
   // Add a new boid
-  boids.push(new Boid(mouseX, mouseY, random(0,TWO_PI)));
+  boids.push(new Boid(mouseX, mouseY));
 }
 
 function draw() {
@@ -60,9 +60,12 @@ function draw() {
   for (let boid of boids) {
     boid.render();
   }
+  // Highlight the last boid
+  noStroke();
+  fill(255,0,0,50);
+  let b = boids[boids.length-1];
+  ellipse(b.x, b.y, 2*interactionRadius);
 
-  // TODO: Adjust speed and direction of every boid
-  stroke(255);
   for (let boid of boids) {
     let neigthbors = qtree.query(new Circle(boid.x, boid.y, interactionRadius));
     var f;
@@ -78,7 +81,6 @@ function draw() {
     f = engine.chaosForce();
     boid.applyForce(f, settings.noise);
   }
-
 
   // Move boids
   for (let boid of boids) {
