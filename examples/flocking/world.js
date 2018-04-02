@@ -6,23 +6,36 @@ class Boid {
   constructor(x,y,dir) {
     this.x = x;
     this.y = y;
-    this.speed = maxSpeed;
-    this.force = {x:0, y:0};
     if (!dir) {
-      this.dir = 0;
+      this.dir = random(0,TWO_PI);
     } else {
       this.dir = dir;
     }
+    this.speed = {
+      x : maxSpeed * cos(this.dir),
+      y : maxSpeed * sin(this.dir)
+    };
+    this.force = {
+      x : 0,
+      y : 0
+    };
   }
   move() {
-    //moving
-    this.x += this.speed * cos(this.dir);
-    this.y += this.speed * sin(this.dir);
-    // applying force
-    let d = dist(0,0,this.force.x,this.force.y);
-    if (d > maxSpeed) d = maxSpeed;
-    this.speed = d;
-    this.dir = atan2(this.force.x,this.force.y);
+    // Move
+    this.x += this.speed.x;
+    this.y += this.speed.y;
+    // Applying the driving force
+    this.speed.x += this.force.x;
+    this.speed.y += this.force.y;
+    let d = dist(0,0,this.speed.x,this.speed.y);
+    if (d > maxSpeed) {
+      this.speed.x /= d;
+      this.speed.y /= d;
+    }
+    this.dir = atan2(this.speed.y,this.speed.x);
+    // Nullify the driving force
+    this.force.x = 0;
+    this.force.y = 0;
   }
   render() {
     if (!this.color) {
@@ -39,7 +52,8 @@ class Boid {
     pop();
   }
   applyForce(f) {
-    this.force = f;
+    this.force.x += f.x;
+    this.force.y += f.y;
   }
 }
 
@@ -81,8 +95,8 @@ class Engine {
 
   chaosForce() {
     let f = {
-      x : randomGaussian(0,0.5),
-      y : randomGaussian(0,0.5)
+      x : randomGaussian(0,0.1),
+      y : randomGaussian(0,0.1)
     };
     return f;
   }
