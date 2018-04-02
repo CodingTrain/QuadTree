@@ -51,9 +51,10 @@ class Boid {
     rect(0,0,2*s,2*s, 0,s,s,s);
     pop();
   }
-  applyForce(f) {
-    this.force.x += f.x;
-    this.force.y += f.y;
+  applyForce(f, weight) {
+    if (typeof weight == 'undefined') weight = 1;
+    this.force.x += f.x * weight;
+    this.force.y += f.y * weight;
   }
 }
 

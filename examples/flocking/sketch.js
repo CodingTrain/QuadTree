@@ -30,16 +30,16 @@ const HEIGHT = 400;
 function setup() {
   createCanvas(WIDTH, HEIGHT);
   // Boids try to go in the same direction
-  settings.add('alignment',0,2,1,0.1);
+  settings.add('alignment',0,2,0.2,0.1);
   // Boids want to stay close to each other
   settings.add('cohesion',0,2,1,0.1);
   // Boids don't like intersecting
-  settings.add('separation',0,2,1,0.1);
+  settings.add('separation',0,2,1.5,0.1);
   // Boids move a bit randomly
   settings.add('noise',0,2,1,0.1);
   // TODO: Boids try to avoid obstacles
   // settings.add('avoid',0,2,1,0.1);
-  for (let x = 1; x < 150; x ++) {
+  for (let x = 1; x < 100; x ++) {
     boids.push(new Boid(random(0,WIDTH), random(0,HEIGHT), random(0,TWO_PI)));
   }
 }
@@ -65,24 +65,18 @@ function draw() {
   stroke(255);
   for (let boid of boids) {
     let neigthbors = qtree.query(new Circle(boid.x, boid.y, interactionRadius));
-    let force = {x:0, y:0};
     var f;
     for (let other of neigthbors) {
       if (boid === other) continue;
       f = engine.pullForce(boid, other);
-      force.x += f.x * settings.cohesion;
-      force.y += f.y * settings.cohesion;
+      boid.applyForce(f, settings.cohesion);
       f = engine.pushForce(boid, other);
-      force.x += f.x * settings.separation;
-      force.y += f.y * settings.separation;
+      boid.applyForce(f, settings.separation);
       f = engine.alignForce(boid, other);
-      force.x += f.x * settings.alignment;
-      force.y += f.y * settings.alignment;
+      boid.applyForce(f, settings.alignment);
     }
     f = engine.chaosForce();
-    force.x += f.x * settings.noise;
-    force.y += f.y * settings.noise;
-    boid.applyForce(force);
+    boid.applyForce(f, settings.noise);
   }
 
 
