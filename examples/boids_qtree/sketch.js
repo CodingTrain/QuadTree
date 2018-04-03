@@ -17,7 +17,7 @@ function setup() {
     background(0);
 
     // Instantiate boids and quadtree boundary
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < 1000; i++) {
         particles.push(new Boid())
     }
     boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
