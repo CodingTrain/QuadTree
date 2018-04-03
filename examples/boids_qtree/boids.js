@@ -14,7 +14,7 @@ class Boid {
         // which affects performance.
         this.vel = createVector(random(-1,1),random(-1,1));
         this.acc = createVector(0, 0);
-        this.loc = createVector(random(0.1,width),random(0.3,height));
+        this.loc = createVector(randomGaussian(width/2,4),randomGaussian(height/2,4));
 
         // Other attributes and limits
         this.r = 7
@@ -71,7 +71,7 @@ class Boid {
         // Try these settings out with no background in draw
         // | 0.2 | 1 | 1.5 | // | 1.5 | 1 | 1.3 | // | 1 | 1 | 1.3 |
 
-        this.applyForce(this.separate(qtree).mult(0.2));
+        this.applyForce(this.separate(qtree).mult(0.5));
         this.applyForce(this.align(qtree).mult(1));
         this.applyForce(this.cohesion(qtree).mult(1.5));
 
@@ -197,7 +197,7 @@ class Boid {
     render() {
         fill(255);
         stroke(255);
-        strokeWeight(this.r);
+        strokeWeight(this.r/2);
         point(this.loc.x, this.loc.y);
     }
 }
