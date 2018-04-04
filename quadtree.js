@@ -13,6 +13,8 @@ class Point {
 }
 
 class Rectangle {
+  // Here x and y are coordinates of the center
+  // w and h are halfes of width and height.
   constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
@@ -27,14 +29,12 @@ class Rectangle {
       point.y <= this.y + this.h);
   }
 
-
   intersects(range) {
     return !(range.x - range.w > this.x + this.w ||
       range.x + range.w < this.x - this.w ||
       range.y - range.h > this.y + this.h ||
       range.y + range.h < this.y - this.h);
   }
-
 
 }
 
@@ -57,27 +57,15 @@ class Circle {
 
   intersects(range) {
 
-    var xDist = Math.abs(range.x - this.x);
-    var yDist = Math.abs(range.y - this.y);
+    // x and y are coordinates of the circle center
+    // relative to the closest edge of the given rectangle
+    var x = Math.abs(range.x - this.x) - range.w;
+    var y = Math.abs(range.y - this.y) - range.h;
+    var d = Math.pow(x, 2) + Math.pow(y, 2);
 
-    // radius of the circle
-    var r = this.r;
-
-    var w = range.w;
-    var h = range.h;
-
-    var edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
-
-    // no intersection
-    if (xDist > (r + w) || yDist > (r + h))
-      return false;
-
-    // intersection within the circle
-    if (xDist <= w || yDist <= h)
-      return true;
-
-    // intersection on the edge of the circle
-    return edges <= this.rSquared;
+    return d <= this.rSquared // circle contains corner of the rectangle
+        || (x <= 0 && y <= this.r) // intersection over horisontal edge
+        || (y <= 0 && x <= this.r); // intersection over vertical edge
   }
 }
 
@@ -166,4 +154,3 @@ class QuadTree {
 }
 
 ((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
-
