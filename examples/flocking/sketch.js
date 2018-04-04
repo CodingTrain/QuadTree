@@ -2,10 +2,13 @@ class Settings {
   constructor() {}
   add(param, minVal, maxVal, curVal, step) {
     this[param] = curVal;
-    let div = createDiv('');
+    let div = createSpan('');
     div.id(param);
+    div.class('slider');
     let slider = createSlider(minVal, maxVal, curVal, step);
-    let label = createP(`${param}: ${curVal}`);
+    slider.class('slider-param');
+    let label = createSpan(`${param}: ${curVal}`);
+    label.class('slider-label');
     // `this` doesn't work from anon-function in the slider,
     // references something else
     let self = this;
@@ -15,9 +18,7 @@ class Settings {
     });
     slider.parent(param);
     label.parent(param);
-    // let lineBreak = createSpan('<br/>');
-    // lineBreak.parent(param);
-    // TODO: make slider and text stay on the same line
+    createElement('br');
   }
 }
 let settings = new Settings();
@@ -29,6 +30,7 @@ const HEIGHT = 400;
 
 function setup() {
   let canvas = createCanvas(WIDTH, HEIGHT);
+  createElement('br');
   canvas.mouseClicked(function ()  {
     // Add a new boid
     boids.push(new Boid(mouseX, mouseY));
