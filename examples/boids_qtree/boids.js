@@ -198,7 +198,7 @@ class Boid {
     render() {
         // Keep boids same color but distinguish them with brightness and size
         if(!this.color) this.color = color(190,96,floor(random(50,90)));
-        if(!this.strokeRadius) this.strokeRadius = random(this.r/3,this.r);
+        if(!this.strokeRadius) this.strokeRadius = random(this.r/2,this.r);
         
         stroke(this.color);
         strokeWeight(this.strokeRadius);

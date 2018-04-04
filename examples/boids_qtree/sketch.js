@@ -22,11 +22,11 @@ function setup() {
     // Parameters object
     parameters = {boids: 600,
                   sep: 1.5,
-                  ali: 0.5,
-                  coh: 1.2,
-                  sep_tolerance: 25,
-                  ali_tolerance: 50,
-                  coh_tolerance: 50,
+                  ali: 1,
+                  coh: 1,
+                  sep_tolerance: 50,
+                  ali_tolerance: 25,
+                  coh_tolerance: 25,
                   display_qtree: true,
                   background: true
                 };
@@ -45,18 +45,17 @@ function draw() {
     if(parameters.background) background(0);
     
     // Instantiate a quadtree from particles at every frame
-    let qtree = new QuadTree(boundary, 5);
+    let qtree = new QuadTree(boundary, 4);
     
     for (let p of particles) {
         let point = new Point(p.loc.x, p.loc.y, p);
         qtree.insert(point)
-        p.run(qtree);
       }
      
-    // Run particle system here
-    // for (let p of particles) {
-    //     p.run(qtree);
-    // }
+    //Run particle system here
+    for (let p of particles) {
+        p.run(qtree);
+    }
     
     // Display quadtree in action
     if(parameters.display_qtree) show(qtree);
