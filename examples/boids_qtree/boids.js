@@ -9,18 +9,24 @@
 
 class Boid {
 
-    constructor() {
+    constructor(_parameters) {
         // Initializing location to be spread out rather than starting from one point
         // which affects performance.
-        this.vel = createVector(random(-1,1),random(-1,1));
+
         this.acc = createVector(0, 0);
-        this.loc = createVector(randomGaussian(width/2,4),randomGaussian(height/2,4));
+        this.loc = createVector(randomGaussian(width/2,25),randomGaussian(height/2,25));
+        this.angle = random(-PI,PI);
+        this.vel = createVector(cos(this.angle),sin(this.angle))
 
         // Other attributes and limits
+        this.parameters = _parameters;
         this.r = 7
         this.maxspeed = 3;
         this.maxforce = 0.05;
         this.mass = 1;
+
+        
+
 
     }
 
@@ -41,12 +47,12 @@ class Boid {
         this.loc.add(this.vel);
 
         //Reset acceleration
-        this.acc.mult(0)
+        this.acc.mult(0);
     }
 
     applyForce(force) {
         // Rearranging F = ma to a = F/m
-        this.acc.add(force)
+        this.acc.add(force).div(this.mass);
     }
 
     seek(target){
@@ -54,13 +60,13 @@ class Boid {
 
         // Normalize and scale
         desired.normalize();
-        desired.mult(this.maxspeed)
+        desired.mult(this.maxspeed);
 
         // Steer = Desired minus Velocity
         let steer = desired.sub(this.vel);
 
         // Limit steer vector magnitude (comment it out for some fun arrangements)
-        //steer.limit(this.maxforce);
+        steer.limit(this.maxforce);
 
         return steer
 
@@ -68,21 +74,19 @@ class Boid {
 
     flock(qtree) {
         // The flocking trifecta: separation, alignment, and cohesion.
-        // Try these settings out with no background in draw
-        // | 0.2 | 1 | 1.5 | // | 1.5 | 1 | 1.3 | // | 1 | 1 | 1.3 |
 
-        this.applyForce(this.separate(qtree).mult(0.5));
-        this.applyForce(this.align(qtree).mult(1));
-        this.applyForce(this.cohesion(qtree).mult(1.5));
+        this.applyForce(this.separate(qtree).mult(this.parameters.sep));
+        this.applyForce(this.align(qtree).mult(this.parameters.ali));
+        this.applyForce(this.cohesion(qtree).mult(this.parameters.coh));
 
         // Add any additional force(s) to "stir the pot" here
-        //this.applyForce(createVector(-1,0));
+        // this.applyForce(createVector(-1,0));
     }
 
 
     separate(qtree) {
 
-        let tolerance = 25;
+        let tolerance =  this.parameters.sep_tolerance;
         let steer = createVector(0, 0);
         let count = 0;
 
@@ -105,8 +109,7 @@ class Boid {
         }
 
         if(count>0){
-            // comment out line below for some interesting arrangements
-            // steer.div(count);
+            steer.div(count);
         }
 
         if (steer.mag() > 0) {
@@ -114,8 +117,7 @@ class Boid {
             steer.mult(this.maxspeed);
             steer.sub(this.vel);
 
-            // comment out line below for some interesting arrangements
-            //steer.limit(this.maxforce);
+            steer.limit(this.maxforce);
         }
 
         return steer
@@ -123,7 +125,7 @@ class Boid {
 
     align(qtree){
 
-        let tolerance = 50;
+        let tolerance =  this.parameters.ali_tolerance;
         let steer = createVector(0, 0);
         let count = 0;
 
@@ -139,7 +141,7 @@ class Boid {
             if (0 < d && d < tolerance) {
                 steer.add(other.vel)
                 count++;
-            }
+            }   
         }
 
         if(count > 0){
@@ -148,7 +150,6 @@ class Boid {
             steer.mult(this.maxspeed);
             steer = steer.sub(this.vel)
 
-            // comment out line below for some jitters
             steer.limit(this.maxforce)
         }
 
@@ -157,12 +158,13 @@ class Boid {
 
     cohesion(qtree){
 
-        let tolerance = 50;
+        let tolerance = this.parameters.coh_tolerance;
         let steer = createVector(0, 0);
         let count = 0;
-
+        
         let range = new Circle(this.loc.x, this.loc.y, tolerance);
         let points = qtree.query(range);
+        
 
         for (let p of points) {
 
@@ -176,9 +178,7 @@ class Boid {
         }
 
         if(count > 0){
-            // comment out line below for some interesting arrangements
-            //steer.div(count);
-
+            steer.div(count);
             steer = this.seek(steer)
         }
 
@@ -189,15 +189,20 @@ class Boid {
 
     torroidal() {
         // Pacman world, or rather, a torus
-        this.loc.x = this.loc.x > width ? 0 : this.loc.x
-        this.loc.y = this.loc.y > height ? 0 : this.loc.y
-        this.loc.x = this.loc.x+self.r < 0 ? width : this.loc.x
-        this.loc.y = this.loc.y+self.r < 0 ? height : this.loc.y
+        this.loc.x = this.loc.x > width ? this.loc.x-width : this.loc.x
+        this.loc.y = this.loc.y > height ? this.loc.y-height : this.loc.y
+        this.loc.x = this.loc.x < 0 ? this.loc.x+width : this.loc.x
+        this.loc.y = this.loc.y < 0 ? this.loc.y+height : this.loc.y
     }
+
     render() {
-        fill(255);
-        stroke(255);
-        strokeWeight(this.r/2);
+        // Keep boids same color but distinguish them with brightness and size
+        if(!this.color) this.color = color(190,96,floor(random(50,90)));
+        if(!this.strokeRadius) this.strokeRadius = random(this.r/3,this.r);
+        
+        stroke(this.color);
+        strokeWeight(this.strokeRadius);
+        
         point(this.loc.x, this.loc.y);
     }
 }

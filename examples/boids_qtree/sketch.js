@@ -11,44 +11,64 @@
 let particles = [];
 let boundary;
 let count = 0;
+let parameters;
 
 function setup() {
-    createCanvas(400, 400);
+    createCanvas(600, 400);
     background(0);
+    smooth()
+    colorMode(HSB)
+
+    // Parameters object
+    parameters = {boids: 600,
+                  sep: 1.5,
+                  ali: 0.5,
+                  coh: 1.2,
+                  sep_tolerance: 25,
+                  ali_tolerance: 50,
+                  coh_tolerance: 50,
+                  display_qtree: true,
+                  background: true
+                };
 
     // Instantiate boids and quadtree boundary
-    for (let i = 0; i < 1000; i++) {
-        particles.push(new Boid())
+    for (let i = 0; i < parameters.boids; i++) {
+        particles.push(new Boid(parameters))
     }
+
     boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
+    
 }
 
 function draw() {
     //Switch off background and render with alpha for so much fun 
-    background(0);
+    if(parameters.background) background(0);
     
     // Instantiate a quadtree from particles at every frame
     let qtree = new QuadTree(boundary, 5);
+    
     for (let p of particles) {
         let point = new Point(p.loc.x, p.loc.y, p);
-        qtree.insert(point);
+        qtree.insert(point)
         p.run(qtree);
       }
-
-    // Experimenting with condensing the two loops (qtree insert and p.run loops) into one. Seems to be working
-
+     
+    // Run particle system here
     // for (let p of particles) {
     //     p.run(qtree);
     // }
     
     // Display quadtree in action
-    show(qtree);
+    if(parameters.display_qtree) show(qtree);
 
 }
 
 
 function show(qtree) {
-    stroke(0,230,230);
+    //Alternate color of quad stroke to show it well for background = false
+    _color = color(303,56,25+25*sin(frameCount/50))
+    stroke(_color);
+
     noFill();
     strokeWeight(1);
     rectMode(CENTER);
