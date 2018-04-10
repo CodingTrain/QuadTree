@@ -57,16 +57,16 @@ class Circle {
 
   intersects(range) {
 
-    var xDist = Math.abs(range.x - this.x);
+    let xDist = Math.abs(range.x - this.x);
     var yDist = Math.abs(range.y - this.y);
 
     // radius of the circle
-    var r = this.r;
+    let r = this.r;
 
-    var w = range.w;
-    var h = range.h;
+    let w = range.w;
+    let h = range.h;
 
-    var edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
+    let edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
 
     // no intersection
     if (xDist > (r + w) || yDist > (r + h))
