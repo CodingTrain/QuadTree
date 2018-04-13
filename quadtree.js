@@ -58,7 +58,7 @@ class Circle {
   intersects(range) {
 
     let xDist = Math.abs(range.x - this.x);
-    var yDist = Math.abs(range.y - this.y);
+    let yDist = Math.abs(range.y - this.y);
 
     // radius of the circle
     let r = this.r;
