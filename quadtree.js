@@ -133,10 +133,8 @@ class QuadTree {
       this.subdivide();
     }
 
-    if (this.northeast.insert(point) || this.northwest.insert(point) ||
-      this.southeast.insert(point) || this.southwest.insert(point)) {
-      return true;
-    }
+    return (this.northeast.insert(point) || this.northwest.insert(point) ||
+      this.southeast.insert(point) || this.southwest.insert(point));
   }
 
   query(range, found) {
