@@ -177,6 +177,33 @@ class QuadTree {
     return found;
   }
 
+  forEach(fn) {
+    this.points.forEach(fn);
+    if (this.divided) {
+      this.northeast.forEach(fn);
+      this.northwest.forEach(fn);
+      this.southeast.forEach(fn);
+      this.southwest.forEach(fn);
+    }
+  }
+
+  merge(other, capacity) {
+    let left = Math.min(this.boundary.left, other.boundary.left);
+    let right = Math.max(this.boundary.right, other.boundary.right);
+    let top = Math.min(this.boundary.top, other.boundary.top);
+    let bottom = Math.max(this.boundary.bottom, other.boundary.bottom);
+    let height = bottom - top;
+    let width = right - left;
+    let midX = left + width / 2;
+    let midY = top + height / 2;
+    let boundary = new Rectangle(midX, midY, width, height);
+    let result = new QuadTree(boundary, capacity);
+    this.forEach(point => result.insert(point));
+    other.forEach(point => result.insert(point));
+
+    return result;
+  }
+
   get length() {
     let count = this.points.length;
     if (this.divided) {
