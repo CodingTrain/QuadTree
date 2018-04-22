@@ -334,7 +334,7 @@ describe('QuadTree', () => {
       expect(quadtree.length).to.equal(8);
     });
   });
-  describe.only('forEach', () => {
+  describe('forEach', () => {
     let quadtree;
     let points;
     beforeEach(() => {
