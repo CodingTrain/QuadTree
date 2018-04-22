@@ -334,4 +334,25 @@ describe('QuadTree', () => {
       expect(quadtree.length).to.equal(8);
     });
   });
+  describe.only('forEach', () => {
+    let quadtree;
+    let points;
+    beforeEach(() => {
+      let bound = new Rectangle(-30, 40, 12, 43);
+      quadtree = new QuadTree(bound, 4);
+      points = [];
+      for (let idx = 0; idx < 10; ++idx) {
+        points.push(new Point(
+          bound.left + bound.w * Math.random(), 
+          bound.top + bound.h * Math.random()));
+      }
+      points.forEach(point => quadtree.insert(point));
+    });
+    for (let idx = 0; idx < 10; ++idx) {
+      it(`runs forEach function against point ${idx}`, () => {
+        quadtree.forEach(point => point.userData = idx);
+        expect(points[idx].userData).to.equal(idx);
+      });
+    }
+  });
 });
