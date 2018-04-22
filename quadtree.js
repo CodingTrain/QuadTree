@@ -57,16 +57,16 @@ class Circle {
 
   intersects(range) {
 
-    var xDist = Math.abs(range.x - this.x);
-    var yDist = Math.abs(range.y - this.y);
+    let xDist = Math.abs(range.x - this.x);
+    let yDist = Math.abs(range.y - this.y);
 
     // radius of the circle
-    var r = this.r;
+    let r = this.r;
 
-    var w = range.w;
-    var h = range.h;
+    let w = range.w;
+    let h = range.h;
 
-    var edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
+    let edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
 
     // no intersection
     if (xDist > (r + w) || yDist > (r + h))
@@ -133,10 +133,8 @@ class QuadTree {
       this.subdivide();
     }
 
-    if (this.northeast.insert(point) || this.northwest.insert(point) ||
-      this.southeast.insert(point) || this.southwest.insert(point)) {
-      return true;
-    }
+    return (this.northeast.insert(point) || this.northwest.insert(point) ||
+      this.southeast.insert(point) || this.southwest.insert(point));
   }
 
   query(range, found) {
