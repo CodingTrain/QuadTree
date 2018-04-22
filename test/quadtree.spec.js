@@ -305,4 +305,33 @@ describe('QuadTree', () => {
       });
     });
   });
+  describe('size', () => {
+    let quadtree;
+    beforeEach(() => {
+      let rect = new Rectangle(100, 100, 20, 20);
+      quadtree = new QuadTree(rect, 4);
+    });
+    it('returns 0 when no points in QuadTree', () => {
+      expect(quadtree.length).to.equal(0);
+    });
+    it('returns 1 when only one point in QuadTree', () => {
+      quadtree.insert(new Point(95, 95));
+      expect(quadtree.length).to.equal(1);
+    });
+    it('does not increase count when new point is not within QuadTree', () => {
+      quadtree.insert(new Point(0, 0));
+      expect(quadtree.length).to.equal(0);
+    });
+    it('counts points from all subtrees after subdivision', () => {
+      quadtree.insert(new Point(96, 96));
+      quadtree.insert(new Point(96, 106));
+      quadtree.insert(new Point(106, 96));
+      quadtree.insert(new Point(106, 106));
+      quadtree.insert(new Point(96, 96));
+      quadtree.insert(new Point(96, 106));
+      quadtree.insert(new Point(106, 96));
+      quadtree.insert(new Point(106, 106));
+      expect(quadtree.length).to.equal(8);
+    });
+  });
 });

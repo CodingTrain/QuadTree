@@ -20,6 +20,22 @@ class Rectangle {
     this.h = h;
   }
 
+  get left() {
+    return this.x - this.w / 2;
+  }
+
+  get right() {
+    return this.x + this.w / 2;
+  }
+
+  get top() {
+    return this.y - this.h / 2;
+  }
+
+  get bottom() {
+    return this.y + this.h / 2;
+  }
+
   contains(point) {
     return (point.x >= this.x - this.w &&
       point.x <= this.x + this.w &&
@@ -161,6 +177,16 @@ class QuadTree {
     return found;
   }
 
+  get length() {
+    let count = this.points.length;
+    if (this.divided) {
+      count += this.northwest.length;
+      count += this.northeast.length;
+      count += this.southwest.length;
+      count += this.southeast.length;
+    }
+    return count;
+  }
 }
 
 ((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
