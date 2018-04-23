@@ -161,7 +161,27 @@ class QuadTree {
     return found;
   }
 
+  closest(point, count) {
+    if (!count) {
+      count = 1;
+    }
+    let size = Math.max(this.boundary.w, this.boundary.h) / 4;
+    let jump = size / 2;
+    let range = new Circle(point.x, point.y, size);
+    let points = this.query(range);
+    while (points.length !== count) {
+      if (points.length > count) {
+        size -= jump;
+        jump /= 2;
+      } else {
+        size += jump;
+      }
+
+      range = new Circle(point.x, point.y, size);
+      points = this.query(range);
+    }
+    return points;
+  }
 }
 
 ((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
-
