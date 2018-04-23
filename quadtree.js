@@ -163,5 +163,6 @@ class QuadTree {
 
 }
 
-((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
-
+if (typeof module !== "undefined") {
+  module.exports = { Point, Rectangle, QuadTree, Circle };
+}
