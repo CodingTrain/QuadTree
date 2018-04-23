@@ -162,11 +162,13 @@ class QuadTree {
   }
 
   closest(point, count) {
-    if (!count) {
+    if (typeof count === "undefined") {
       count = 1;
     }
+    // Start with a circle 1/4 the size of the boundary
+    // 1/2 the size would be purer, but most final queries are smaller than that
     let size = Math.max(this.boundary.w, this.boundary.h) / 4;
-    let jump = size / 2;
+    let jump = size / 2; // what we change the size by
     let range = new Circle(point.x, point.y, size);
     let points = this.query(range);
     while (points.length !== count) {
@@ -175,6 +177,7 @@ class QuadTree {
         jump /= 2;
       } else {
         size += jump;
+        // don't halve jump when enlarging the query so we don't limit max size
       }
 
       range = new Circle(point.x, point.y, size);
