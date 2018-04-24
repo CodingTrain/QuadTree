@@ -63,24 +63,9 @@ function draw() {
 
     if (withQuadTree.checked()) {
       let points = qtree.query(range);
-      for (let point of points) {
-        let other = point.userData;
-        if (p != other) {
-          let d = dist(p.x, p.y, other.x, other.y);
-          if (d < p.r / 2 + other.r / 2) {
-            p.highlight = true;
-          }
-        }
-      }
+      p.checkCollision(points);
     } else {
-      for (let other of particles) {
-        if (p != other) {
-          let d = dist(p.x, p.y, other.x, other.y);
-          if (d < p.r / 2 + other.r / 2) {
-            p.highlight = true;
-          }
-        }
-      }
+      p.checkCollision(particles);
     }
   }
 
