@@ -26,5 +26,15 @@ class Particle {
     else fill(100);
     ellipse(this.x, this.y, this.r, this.r);
   }
+  checkCollision(others) {
+    for (let other of others) {
+      if (this != other) {
+        let d=dist(this.x,this.y,other.x,other.y);
+        if (d < other.r / 2 + this.r / 2) {
+          this.highlight = true;
+        } 
+      } 
+    } 
+  } 
 
 }
