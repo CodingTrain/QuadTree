@@ -159,6 +159,7 @@ class QuadTree {
     }
 
     return found;
+<<<<<<< Updated upstream
   }
 
   closest(point, count) {
@@ -185,7 +186,40 @@ class QuadTree {
     }
     return points;
   }
+=======
+  }
+
+  closest(point, count) {
+    if (!this.divided && this.points.length === 0) {
+      return [];
+    }
+    if (typeof count === "undefined") {
+      count = 1;
+    }
+    // Start with a circle 1/4 the size of the boundary
+    // 1/2 the size would be purer, but most final queries are smaller than that
+    let size = Math.max(this.boundary.w, this.boundary.h) / 4;
+    let jump = size / 2; // what we change the size by
+    let range = new Circle(point.x, point.y, size);
+    let points = this.query(range);
+    while (points.length !== count) {
+      if (points.length > count) {
+        size -= jump;
+        jump /= 2;
+      } else {
+        size += jump;
+        // don't halve jump when enlarging the query so we don't limit max size
+      }
+
+      range = new Circle(point.x, point.y, size);
+      points = this.query(range);
+    }
+    return points;
+  }
+>>>>>>> Stashed changes
 
 }
 
-((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
+if (typeof module !== "undefined") {
+  module.exports = { Point, Rectangle, QuadTree, Circle };
+}
