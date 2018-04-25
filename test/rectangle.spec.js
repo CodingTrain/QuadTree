@@ -3,20 +3,17 @@ let { Rectangle, Point } = require('../quadtree');
 
 describe('Rectangle', () => {
   describe('on construction', () => {
+    let rect = new Rectangle(12, 23, 40, 83);
     it('sets x', () => {
-      let rect = new Rectangle(12, 23, 40, 83);
       expect(rect.x).to.equal(12);
     });
     it('sets y', () => {
-      let rect = new Rectangle(12, 23, 40, 83);
       expect(rect.y).to.equal(23);
     });
     it('sets w', () => {
-      let rect = new Rectangle(12, 23, 40, 83);
       expect(rect.w).to.equal(40);
     });
     it('sets h', () => {
-      let rect = new Rectangle(12, 23, 40, 83);
       expect(rect.h).to.equal(83);
     });
   });
