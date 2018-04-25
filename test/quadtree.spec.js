@@ -335,10 +335,6 @@ describe('QuadTree', () => {
       found = quadtree.closest(new Point(0, 0), 3);
       expect(found).to.have.length(3);
     });
-    it.skip('returns all items when number requested exceeds QuadTree contentss', () => {
-      found = quadtree.closest(new Point(0, 0), 10);
-      expect(found).to.have.length(4);
-    });
     it('returns correct number of items when tie occurs', () => {
       found = quadtree.closest(new Point(30, 0), 1);
       expect(found).to.have.length(1);
@@ -347,6 +343,11 @@ describe('QuadTree', () => {
       found = quadtree.closest(new Point(-30000, 0), 1);
       expect(found).to.have.length(1);
       expect(found).to.contain(points[0]);
+    });
+    // no total count of items
+    it.skip('returns all items when number requested exceeds QuadTree contents', () => {
+      found = quadtree.closest(new Point(0, 0), 10);
+      expect(found).to.have.length(4);
     });
   });
 });
