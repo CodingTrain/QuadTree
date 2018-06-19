@@ -165,40 +165,40 @@ class QuadTree {
     if (typeof count === "undefined") {
       count = 1;
     }
+
     if (!this.divided) {
+      // Empty
       if (this.points.length == 0) {
         return [];
       }
+      // Limit to number of points in this QuadTree
       if (this.points.length < count) {
         count = this.points.length;
       }
     }
-    // Start with a circle 1/4 the size of the boundary
-    // 1/2 the size would be purer, but most final queries are smaller than that
-    let size = Math.max(this.boundary.w, this.boundary.h) / 4;
-    let jump = size / 2; // what we change the size by
-    let range = new Circle(point.x, point.y, size);
-    let points = this.query(range);
-    while (points.length !== count) {
-      // limit
-      if (jump < 1e-5 && points.length > count) {
-        return points.slice(0, count);
-      }
-      // change size
-      if (points.length > count) {
-        size -= jump;
-        jump /= 2;
-      } else {
-        size += jump;
-        // don't halve jump when enlarging the query so we don't limit max size
-      }
-      // query again
-      range = new Circle(point.x, point.y, size);
-      points = this.query(range);
-    }
-    return points;
-  }
 
+    let low = 0;
+    let high = Math.max(this.boundary.w, this.boundary.h);
+    let points;
+    let limit = 16;
+    while (limit-- && low < high) {
+      let mid = (low + high) / 2;
+      let range = new Circle(point.x, point.y, mid);
+      points = this.query(range);
+      if (points.length === count) {
+        return points;
+      } else if (points.length === 0) {
+        high *= 2;
+      } else if (points.length < count) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    // Break ties
+    let final = new Circle(point.x, point.y, high);
+    return this.query(final).slice(0, count);
+  }
 }
 
 if (typeof module !== "undefined") {
