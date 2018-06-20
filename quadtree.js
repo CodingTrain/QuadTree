@@ -178,7 +178,9 @@ class QuadTree {
     }
 
     let low = 0;
-    let high = Math.max(this.boundary.w, this.boundary.h);
+    // start with a circle that contains the whole tree
+    let high = Math.pow((this.boundary.w / 2), 2) +
+               Math.pow((this.boundary.h / 2), 2);
     let points;
     let limit = 16;
     while (limit-- && low < high) {
