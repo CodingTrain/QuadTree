@@ -101,6 +101,57 @@ class QuadTree {
     this.divided = false;
   }
 
+  toJSON(stringify) {
+    if (typeof stringify === "undefined") {
+      stringify = true;
+    }
+    let obj = { points: this.points };
+    if (this.divided) {
+      obj.ne = this.northeast.toJSON(false);
+      obj.nw = this.northwest.toJSON(false);
+      obj.se = this.southeast.toJSON(false);
+      obj.sw = this.southwest.toJSON(false);
+    }
+    if (stringify) {
+      obj.capacity = this.capacity;
+      obj.x = this.boundary.x;
+      obj.y = this.boundary.y;
+      obj.w = this.boundary.w;
+      obj.h = this.boundary.h;
+      return JSON.stringify(obj);
+    }
+    return obj;
+  }
+  static fromJSON(obj, x, y, w, h, capacity) {
+    if (typeof x === "undefined") {
+      if ("x" in obj) {
+        x = obj.x;
+        y = obj.y;
+        w = obj.w;
+        h = obj.h;
+        capacity = obj.capacity;
+      } else {
+        throw TypeError("JSON missing boundary information");
+      }
+    }
+    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity);
+    qt.points = obj.points;
+    if ("nw" in obj) {
+      let x = qt.boundary.x;
+      let y = qt.boundary.y;
+      let w = qt.boundary.w / 2;
+      let h = qt.boundary.h / 2;
+
+      qt.northeast = QuadTree.fromJSON(obj.ne, x + w, y - h, w, h, capacity);
+      qt.northwest = QuadTree.fromJSON(obj.nw, x - w, y - h, w, h, capacity);
+      qt.southeast = QuadTree.fromJSON(obj.se, x + w, y + h, w, h, capacity);
+      qt.southwest = QuadTree.fromJSON(obj.sw, x - w, y + h, w, h, capacity);
+
+      qt.divided = true;
+    }
+    return qt;
+  }
+
   subdivide() {
     let x = this.boundary.x;
     let y = this.boundary.y;
