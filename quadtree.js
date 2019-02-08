@@ -177,30 +177,24 @@ class QuadTree {
       }
     }
 
-    let low = 0;
-    // start with a circle that contains the whole tree
-    // binary search until we contain our desired count
-    let high = Math.pow((this.boundary.w / 2), 2) +
-               Math.pow((this.boundary.h / 2), 2);
-    let points;
-    let limit = 16; // Limit to prevent lock on ties
-    while (limit-- && low < high) {
-      let mid = (low + high) / 2;
-      let range = new Circle(point.x, point.y, mid);
-      points = this.query(range);
+    // optimized, expanding binary search
+    // start with a small circle, rapidly expand, slowly shrink
+    let radius = 1;
+    let limit = 16;
+    while (true) {
+      const range = new Circle(point.x, point.y, radius);
+      const points = this.query(range);
+      if (points.length > 0 && limit-- <= 0) {
+        return points.slice(0, count); 
+      }
       if (points.length === count) {
         return points; // Return when we hit the right size
-      } else if (points.length === 0) {
-        high *= 2;
       } else if (points.length < count) {
-        low = mid;
+        radius *= 2;
       } else {
-        high = mid;
+        radius /= 1.5;
       }
     }
-    // Break ties when we hit the limit
-    const final = new Circle(point.x, point.y, high);
-    return this.query(final).slice(0, count);
   }
 }
 
