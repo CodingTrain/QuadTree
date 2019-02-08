@@ -161,7 +161,7 @@ class QuadTree {
     return found;
   }
 
-  closest(point, count) {
+  closest(point, count, startingSize) {
     if (typeof count === "undefined") {
       count = 1;
     }
@@ -188,7 +188,7 @@ class QuadTree {
       const range = new Circle(point.x, point.y, radius);
       const points = this.query(range);
       if (points.length > 0 && limit-- <= 0) {
-        return points.slice(0, count); 
+        return points.slice(0, count);
       }
       if (points.length === count) {
         return points; // Return when we hit the right size
