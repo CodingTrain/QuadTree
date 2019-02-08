@@ -107,10 +107,18 @@ class QuadTree {
     }
     let obj = { points: this.points };
     if (this.divided) {
-      obj.ne = this.northeast.toJSON(false);
-      obj.nw = this.northwest.toJSON(false);
-      obj.se = this.southeast.toJSON(false);
-      obj.sw = this.southwest.toJSON(false);
+      if (this.northeast.points.length > 0) {
+        obj.ne = this.northeast.toJSON(false);
+      }
+      if (this.northwest.points.length > 0) {
+        obj.nw = this.northwest.toJSON(false);
+      }
+      if (this.southeast.points.length > 0) {
+        obj.se = this.southeast.toJSON(false);
+      }
+      if (this.southwest.points.length > 0) {
+        obj.sw = this.southwest.toJSON(false);
+      }
     }
     if (stringify) {
       obj.capacity = this.capacity;
@@ -122,6 +130,7 @@ class QuadTree {
     }
     return obj;
   }
+
   static fromJSON(obj, x, y, w, h, capacity) {
     if (typeof x === "undefined") {
       if ("x" in obj) {
@@ -136,16 +145,37 @@ class QuadTree {
     }
     let qt = new QuadTree(new Rectangle(x, y, w, h), capacity);
     qt.points = obj.points;
-    if ("nw" in obj) {
+    if (
+      "ne" in obj ||
+      "nw" in obj ||
+      "se" in obj ||
+      "sw" in obj
+    ) {
       let x = qt.boundary.x;
       let y = qt.boundary.y;
       let w = qt.boundary.w / 2;
       let h = qt.boundary.h / 2;
 
-      qt.northeast = QuadTree.fromJSON(obj.ne, x + w, y - h, w, h, capacity);
-      qt.northwest = QuadTree.fromJSON(obj.nw, x - w, y - h, w, h, capacity);
-      qt.southeast = QuadTree.fromJSON(obj.se, x + w, y + h, w, h, capacity);
-      qt.southwest = QuadTree.fromJSON(obj.sw, x - w, y + h, w, h, capacity);
+      if ("ne" in obj) {
+        qt.northeast = QuadTree.fromJSON(obj.ne, x + w, y - h, w, h, capacity);
+      } else {
+        qt.northeast = new QuadTree(new Rectangle(x + w, y - h, w, h), capacity);
+      }
+      if ("nw" in obj) {
+        qt.northwest = QuadTree.fromJSON(obj.nw, x - w, y - h, w, h, capacity);
+      } else {
+        qt.northwest = new QuadTree(new Rectangle(x - w, y - h, w, h), capacity);
+      }
+      if ("se" in obj) {
+        qt.southeast = QuadTree.fromJSON(obj.se, x + w, y + h, w, h, capacity);
+      } else {
+        qt.southeast = new QuadTree(new Rectangle(x + w, y + h, w, h), capacity);
+      }
+      if ("sw" in obj) {
+        qt.southwest = QuadTree.fromJSON(obj.sw, x - w, y + h, w, h, capacity);
+      } else {
+        qt.southwest = new QuadTree(new Rectangle(x - w, y + h, w, h), capacity);
+      }
 
       qt.divided = true;
     }
@@ -215,4 +245,3 @@ class QuadTree {
 }
 
 ((module ? module.exports = { Point, Rectangle, QuadTree, Circle } : 0));
-

@@ -330,9 +330,8 @@ describe('QuadTree', () => {
       expect(obj.capacity).to.equal(quadtree.capacity);
       expect(obj.ne.points.length).to.equal(quadtree.northeast.points.length);
       expect(obj.ne.points[0].userData.index).to.equal(quadtree.northeast.points[0].userData.index);
-      expect(obj.nw.divided).to.be.undefined;
-      expect(obj.se.x).to.be.undefined;
-      expect(obj.sw.y).to.be.undefined;
+      expect(obj.ne.divided).to.be.undefined;
+      expect(obj.nw).to.be.undefined;
     });
     it('loads properly from a string', () => {
       const json = quadtree.toJSON();
