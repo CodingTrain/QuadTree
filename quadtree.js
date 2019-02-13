@@ -101,32 +101,28 @@ class QuadTree {
     this.divided = false;
   }
 
-  toJSON(stringify) {
-    if (typeof stringify === "undefined") {
-      stringify = true;
-    }
+  toJSON(isChild) {
     let obj = { points: this.points };
     if (this.divided) {
       if (this.northeast.points.length > 0) {
-        obj.ne = this.northeast.toJSON(false);
+        obj.ne = this.northeast.toJSON(true);
       }
       if (this.northwest.points.length > 0) {
-        obj.nw = this.northwest.toJSON(false);
+        obj.nw = this.northwest.toJSON(true);
       }
       if (this.southeast.points.length > 0) {
-        obj.se = this.southeast.toJSON(false);
+        obj.se = this.southeast.toJSON(true);
       }
       if (this.southwest.points.length > 0) {
-        obj.sw = this.southwest.toJSON(false);
+        obj.sw = this.southwest.toJSON(true);
       }
     }
-    if (stringify) {
+    if (!isChild) {
       obj.capacity = this.capacity;
       obj.x = this.boundary.x;
       obj.y = this.boundary.y;
       obj.w = this.boundary.w;
       obj.h = this.boundary.h;
-      return JSON.stringify(obj);
     }
     return obj;
   }
