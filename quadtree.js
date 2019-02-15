@@ -187,13 +187,12 @@ class QuadTree {
     while (true) {
       const range = new Circle(point.x, point.y, radius);
       const points = this.query(range);
-      if (points.length > 0 && limit-- <= 0) {
-        return points.slice(0, count);
-      }
       if (points.length === count) {
         return points; // Return when we hit the right size
       } else if (points.length < count) {
         radius *= 2;
+      } else if (limit-- <= 0) {
+        return points.slice(0, count); // Slice to return correct count (breaks ties)
       } else {
         radius /= 1.5;
       }
