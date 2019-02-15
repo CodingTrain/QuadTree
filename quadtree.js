@@ -194,7 +194,7 @@ class QuadTree {
       } else if (limit-- <= 0) {
         return points.slice(0, count); // Slice to return correct count (breaks ties)
       } else {
-        radius /= 1.5;
+        radius /= 3;
       }
     }
   }
