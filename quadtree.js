@@ -177,6 +177,44 @@ class QuadTree {
     return found;
   }
 
+  closest(point, count, startingSize) {
+    if (typeof count === "undefined") {
+      count = 1;
+    }
+    if (typeof startingSize === "undefined") {
+      startingSize = 1;
+    }
+
+    if (!this.divided) {
+      // Empty
+      if (this.points.length == 0) {
+        return [];
+      }
+      // Limit to number of points in this QuadTree
+      if (this.points.length < count) {
+        count = this.points.length;
+      }
+    }
+
+    // optimized, expanding binary search
+    // start with a small circle, rapidly expand, slowly shrink
+    let radius = startingSize;
+    let limit = 16;
+    while (true) {
+      const range = new Circle(point.x, point.y, radius);
+      const points = this.query(range);
+      if (points.length === count) {
+        return points; // Return when we hit the right size
+      } else if (points.length < count) {
+        radius *= 2;
+      } else if (limit-- <= 0) {
+        return points.slice(0, count); // Slice to return correct count (breaks ties)
+      } else {
+        radius /= 3;
+      }
+    }
+  }
+
   forEach(fn) {
     this.points.forEach(fn);
     if (this.divided) {
