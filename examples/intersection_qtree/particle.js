@@ -1,9 +1,7 @@
-// The Nature of Code
 // Daniel Shiffman
-// http://natureofcode.com
-// Daniel Shiffman
-
-// Simple class describing an ellipse living on our screen
+// https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html
 
 class Particle {
   constructor(x, y) {

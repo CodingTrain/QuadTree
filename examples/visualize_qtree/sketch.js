@@ -1,10 +1,7 @@
 // Daniel Shiffman
-// http://codingtra.in
-// http://patreon.com/codingtrain
-
-// QuadTree
-// [video url 1]
-// [video url 2]
+// https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html
 
 let qtree;
 

@@ -1,8 +1,7 @@
-// The Nature of Code
 // Daniel Shiffman
-// http://natureofcode.com
-
-// The old way to do intersection tests, look how slow!!
+// https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html
 
 let particleCount = 1000;
 let particles = []; // ArrayList for all "things"
