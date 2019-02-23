@@ -305,4 +305,54 @@ describe('QuadTree', () => {
       });
     });
   });
+  describe('size', () => {
+    let quadtree;
+    beforeEach(() => {
+      let rect = new Rectangle(100, 100, 20, 20);
+      quadtree = new QuadTree(rect, 4);
+    });
+    it('returns 0 when no points in QuadTree', () => {
+      expect(quadtree.length).to.equal(0);
+    });
+    it('returns 1 when only one point in QuadTree', () => {
+      quadtree.insert(new Point(95, 95));
+      expect(quadtree.length).to.equal(1);
+    });
+    it('does not increase count when new point is not within QuadTree', () => {
+      quadtree.insert(new Point(0, 0));
+      expect(quadtree.length).to.equal(0);
+    });
+    it('counts points from all subtrees after subdivision', () => {
+      quadtree.insert(new Point(96, 96));
+      quadtree.insert(new Point(96, 106));
+      quadtree.insert(new Point(106, 96));
+      quadtree.insert(new Point(106, 106));
+      quadtree.insert(new Point(96, 96));
+      quadtree.insert(new Point(96, 106));
+      quadtree.insert(new Point(106, 96));
+      quadtree.insert(new Point(106, 106));
+      expect(quadtree.length).to.equal(8);
+    });
+  });
+  describe('forEach', () => {
+    let quadtree;
+    let points;
+    beforeEach(() => {
+      let bound = new Rectangle(-30, 40, 12, 43);
+      quadtree = new QuadTree(bound, 4);
+      points = [];
+      for (let idx = 0; idx < 10; ++idx) {
+        points.push(new Point(
+          bound.left + bound.w * Math.random(), 
+          bound.top + bound.h * Math.random()));
+      }
+      points.forEach(point => quadtree.insert(point));
+    });
+    for (let idx = 0; idx < 10; ++idx) {
+      it(`runs forEach function against point ${idx}`, () => {
+        quadtree.forEach(point => point.userData = idx);
+        expect(points[idx].userData).to.equal(idx);
+      });
+    }
+  });
 });
