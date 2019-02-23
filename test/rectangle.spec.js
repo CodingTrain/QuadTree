@@ -160,4 +160,22 @@ describe('Rectangle', () => {
       expect(base.intersects(test)).not.to.be.true;
     });
   });
+  describe('calculates dimension', () => {
+    let rect;
+    beforeEach(() => {
+      rect = new Rectangle(100, 200, 30, 20);
+    });
+    it('left correctly', () => {
+      expect(rect.left).to.equal(85);
+    });
+    it('right correctly', () => {
+      expect(rect.right).to.equal(115);
+    });
+    it('top correctly', () => {
+      expect(rect.top).to.equal(190);
+    });
+    it('bottom correctly', () => {
+      expect(rect.bottom).to.equal(210);
+    });
+  });
 });
