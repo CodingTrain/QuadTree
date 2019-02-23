@@ -20,6 +20,22 @@ class Rectangle {
     this.h = h;
   }
 
+  get left() {
+    return this.x - this.w / 2;
+  }
+
+  get right() {
+    return this.x + this.w / 2;
+  }
+
+  get top() {
+    return this.y - this.h / 2;
+  }
+
+  get bottom() {
+    return this.y + this.h / 2;
+  }
+
   contains(point) {
     return (point.x >= this.x - this.w &&
       point.x <= this.x + this.w &&
@@ -161,6 +177,81 @@ class QuadTree {
     return found;
   }
 
+  closest(point, count, startingSize) {
+    if (typeof count === "undefined") {
+      count = 1;
+    }
+    if (typeof startingSize === "undefined") {
+      startingSize = 1;
+    }
+
+    if (!this.divided) {
+      // Empty
+      if (this.points.length == 0) {
+        return [];
+      }
+      // Limit to number of points in this QuadTree
+      if (this.points.length < count) {
+        count = this.points.length;
+      }
+    }
+
+    // optimized, expanding binary search
+    // start with a small circle, rapidly expand, slowly shrink
+    let radius = startingSize;
+    let limit = 16;
+    while (true) {
+      const range = new Circle(point.x, point.y, radius);
+      const points = this.query(range);
+      if (points.length === count) {
+        return points; // Return when we hit the right size
+      } else if (points.length < count) {
+        radius *= 2;
+      } else if (limit-- <= 0) {
+        return points.slice(0, count); // Slice to return correct count (breaks ties)
+      } else {
+        radius /= 3;
+      }
+    }
+  }
+
+  forEach(fn) {
+    this.points.forEach(fn);
+    if (this.divided) {
+      this.northeast.forEach(fn);
+      this.northwest.forEach(fn);
+      this.southeast.forEach(fn);
+      this.southwest.forEach(fn);
+    }
+  }
+
+  merge(other, capacity) {
+    let left = Math.min(this.boundary.left, other.boundary.left);
+    let right = Math.max(this.boundary.right, other.boundary.right);
+    let top = Math.min(this.boundary.top, other.boundary.top);
+    let bottom = Math.max(this.boundary.bottom, other.boundary.bottom);
+    let height = bottom - top;
+    let width = right - left;
+    let midX = left + width / 2;
+    let midY = top + height / 2;
+    let boundary = new Rectangle(midX, midY, width, height);
+    let result = new QuadTree(boundary, capacity);
+    this.forEach(point => result.insert(point));
+    other.forEach(point => result.insert(point));
+
+    return result;
+  }
+
+  get length() {
+    let count = this.points.length;
+    if (this.divided) {
+      count += this.northwest.length;
+      count += this.northeast.length;
+      count += this.southwest.length;
+      count += this.southeast.length;
+    }
+    return count;
+  }
 }
 
 if (typeof module !== "undefined") {
