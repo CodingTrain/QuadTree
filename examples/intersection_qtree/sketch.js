@@ -7,7 +7,6 @@
 let particleCount = 1000;
 let particles = []; // ArrayList for all "things"
 
-
 let framerateP;
 let withQuadTree;
 let total;
@@ -35,13 +34,11 @@ function setup() {
       particles.splice(0, particles.length - particleCount);
     }
   });
-
 }
 
 function draw() {
   let boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
   qtree = new QuadTree(boundary, 4);
-
 
   background(0);
   fill(255);
@@ -55,12 +52,8 @@ function draw() {
     qtree.insert(point);
   }
 
-
   for (let p of particles) {
-    p.highlight = false;
-
     let range = new Circle(p.x, p.y, p.r * 2);
-
     if (withQuadTree.checked()) {
       let points = qtree.query(range);
       p.checkCollision(points);
@@ -69,17 +62,15 @@ function draw() {
     }
   }
 
-
   for (let p of particles) {
     p.render();
     p.move();
   }
 
   let fr = floor(frameRate());
-  framerateP.html("Framerate: " + fr);
+  framerateP.html('Framerate: ' + fr);
 
   // show(qtree);
-
 }
 
 function show(qtree) {
