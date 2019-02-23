@@ -305,7 +305,6 @@ describe('QuadTree', () => {
       });
     });
   });
-
   describe('closest', () => {
     let quadtree;
     let points;
@@ -350,6 +349,7 @@ describe('QuadTree', () => {
       found = quadtree.closest(new Point(0, 0), 10);
       expect(found).to.have.length(4);
     });
+  });
   describe('size', () => {
     let quadtree;
     beforeEach(() => {
