@@ -3,8 +3,9 @@ A QuadTree example (and almost sort of a JavaScript library) with [p5.js](http:/
 ## QuadTree
 * [QuadTree on wikipedia](https://en.wikipedia.org/wiki/Quadtree)
 * [QuadTree pseudo-code](https://en.wikipedia.org/wiki/Quadtree#Pseudo_code)
-* [QuadTree video tutorial part 1](https://youtu.be/OJxEcs0w_kE)
-* [QuadTree video tutorial part 2](https://youtu.be/QQx_NmCIuCY)
+* [QuadTree video tutorial 1](https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html)
+* [QuadTree video tutorial 2](https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html)
+* [QuadTree video tutorial 3](https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html)
 
 ## How to use
 * You can download and include `quadtree.js` in your p5 sketch or refer to it via this CDN link:
