@@ -1,18 +1,28 @@
-A QuadTree example for JavaScript with [p5.js](http://p5js.org).
+A QuadTree example (and almost sort of a JavaScript library) with [p5.js](http://p5js.org).
 
-# QuadTree
+## QuadTree
 * [QuadTree on wikipedia](https://en.wikipedia.org/wiki/Quadtree)
 * [QuadTree pseudo-code](https://en.wikipedia.org/wiki/Quadtree#Pseudo_code)
-* [QuadTree video tutorial part 1](https://youtu.be/OJxEcs0w_kE)
-* [QuadTree video tutorial part 2](https://youtu.be/QQx_NmCIuCY)
+* [QuadTree video tutorial 1](https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html)
+* [QuadTree video tutorial 2](https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html)
+* [QuadTree video tutorial 3](https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html)
 
-# QuadTree Code and Example
-* [QuadTree Repo](https://github.com/CodingTrain/QuadTree)
-* [QuadTree code](https://github.com/CodingTrain/QuadTree/blob/master/quadtree.js)
-* Visualize the QuadTree: [code](https://github.com/CodingTrain/QuadTree/tree/master/examples/visualize_qtree), [demo](https://codingtrain.github.io/QuadTree/examples/visualize_qtree/)
-* Collision Detection with QuadTree: [code](https://github.com/CodingTrain/QuadTree/tree/master/examples/intersection_qtree), [demo](https://codingtrain.github.io/QuadTree/examples/intersection_qtree/)
+## How to use
+* You can download and include `quadtree.js` in your p5 sketch or refer to it via this CDN link:
 
-# Testing
+```html
+<script src="https://cdn.jsdelivr.net/gh/CodingTrain/QuadTree/quadtree.js"></script>
+```
+
+Once you've include the library you can create a `QuadTree` object a `Rectangle` boundary and maximum capacity:
+
+```javascript
+const r = new Rectangle(0, 0, width, height);
+const capacity = 4;
+const quadtree = new QuadTree(r, capacity);
+```
+
+## Testing
 To run tests use one of the following commands
 
 For continuous testing
@@ -26,6 +36,11 @@ npm run test
 ```
 This will output to the `coverage` folder where you can few test coverage by opening index.html
 
-# Other QuadTree libraries in JS
+## Other QuadTree libraries in JS
 * [quadtree-js](https://github.com/timohausmann/quadtree-js)
 * [d3-quadtree](https://github.com/d3/d3-quadtree)
+
+## Other Versions
+
+### Ports to other languages
+ * Carla de Beer (Processing port) - [GitHub](https://github.com/Carla-de-Beer/Processing/tree/master/QuadTree)

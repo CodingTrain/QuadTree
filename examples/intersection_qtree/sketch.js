@@ -1,12 +1,10 @@
-// The Nature of Code
 // Daniel Shiffman
-// http://natureofcode.com
-
-// The old way to do intersection tests, look how slow!!
+// https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html
 
 let particleCount = 1000;
 let particles = []; // ArrayList for all "things"
-
 
 let framerateP;
 let withQuadTree;
@@ -35,13 +33,11 @@ function setup() {
       particles.splice(0, particles.length - particleCount);
     }
   });
-
 }
 
 function draw() {
   let boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
   qtree = new QuadTree(boundary, 4);
-
 
   background(0);
   fill(255);
@@ -55,35 +51,15 @@ function draw() {
     qtree.insert(point);
   }
 
-
   for (let p of particles) {
-    p.highlight = false;
-
     let range = new Circle(p.x, p.y, p.r * 2);
-
     if (withQuadTree.checked()) {
       let points = qtree.query(range);
-      for (let point of points) {
-        let other = point.userData;
-        if (p != other) {
-          let d = dist(p.x, p.y, other.x, other.y);
-          if (d < p.r / 2 + other.r / 2) {
-            p.highlight = true;
-          }
-        }
-      }
+      p.checkCollision(points);
     } else {
-      for (let other of particles) {
-        if (p != other) {
-          let d = dist(p.x, p.y, other.x, other.y);
-          if (d < p.r / 2 + other.r / 2) {
-            p.highlight = true;
-          }
-        }
-      }
+      p.checkCollision(particles);
     }
   }
-
 
   for (let p of particles) {
     p.render();
@@ -91,10 +67,9 @@ function draw() {
   }
 
   let fr = floor(frameRate());
-  framerateP.html("Framerate: " + fr);
+  framerateP.html('Framerate: ' + fr);
 
   // show(qtree);
-
 }
 
 function show(qtree) {
