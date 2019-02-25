@@ -262,15 +262,12 @@ class QuadTree {
       startingSize = 1;
     }
 
-    if (!this.divided) {
-      // Empty
-      if (this.points.length == 0) {
-        return [];
-      }
-      // Limit to number of points in this QuadTree
-      if (this.points.length < count) {
-        count = this.points.length;
-      }
+    // Limit to number of points in this QuadTree
+    if (this.length == 0) {
+      return [];
+    }
+    if (this.length < count) {
+      return this.points;
     }
 
     // optimized, expanding binary search
