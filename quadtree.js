@@ -117,6 +117,83 @@ class QuadTree {
     this.divided = false;
   }
 
+  toJSON(isChild) {
+    let obj = { points: this.points };
+    if (this.divided) {
+      if (this.northeast.points.length > 0) {
+        obj.ne = this.northeast.toJSON(true);
+      }
+      if (this.northwest.points.length > 0) {
+        obj.nw = this.northwest.toJSON(true);
+      }
+      if (this.southeast.points.length > 0) {
+        obj.se = this.southeast.toJSON(true);
+      }
+      if (this.southwest.points.length > 0) {
+        obj.sw = this.southwest.toJSON(true);
+      }
+    }
+    if (!isChild) {
+      obj.capacity = this.capacity;
+      obj.x = this.boundary.x;
+      obj.y = this.boundary.y;
+      obj.w = this.boundary.w;
+      obj.h = this.boundary.h;
+    }
+    return obj;
+  }
+
+  static fromJSON(obj, x, y, w, h, capacity) {
+    if (typeof x === "undefined") {
+      if ("x" in obj) {
+        x = obj.x;
+        y = obj.y;
+        w = obj.w;
+        h = obj.h;
+        capacity = obj.capacity;
+      } else {
+        throw TypeError("JSON missing boundary information");
+      }
+    }
+    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity);
+    qt.points = obj.points;
+    if (
+      "ne" in obj ||
+      "nw" in obj ||
+      "se" in obj ||
+      "sw" in obj
+    ) {
+      let x = qt.boundary.x;
+      let y = qt.boundary.y;
+      let w = qt.boundary.w / 2;
+      let h = qt.boundary.h / 2;
+
+      if ("ne" in obj) {
+        qt.northeast = QuadTree.fromJSON(obj.ne, x + w, y - h, w, h, capacity);
+      } else {
+        qt.northeast = new QuadTree(new Rectangle(x + w, y - h, w, h), capacity);
+      }
+      if ("nw" in obj) {
+        qt.northwest = QuadTree.fromJSON(obj.nw, x - w, y - h, w, h, capacity);
+      } else {
+        qt.northwest = new QuadTree(new Rectangle(x - w, y - h, w, h), capacity);
+      }
+      if ("se" in obj) {
+        qt.southeast = QuadTree.fromJSON(obj.se, x + w, y + h, w, h, capacity);
+      } else {
+        qt.southeast = new QuadTree(new Rectangle(x + w, y + h, w, h), capacity);
+      }
+      if ("sw" in obj) {
+        qt.southwest = QuadTree.fromJSON(obj.sw, x - w, y + h, w, h, capacity);
+      } else {
+        qt.southwest = new QuadTree(new Rectangle(x - w, y + h, w, h), capacity);
+      }
+
+      qt.divided = true;
+    }
+    return qt;
+  }
+
   subdivide() {
     let x = this.boundary.x;
     let y = this.boundary.y;
@@ -185,15 +262,12 @@ class QuadTree {
       startingSize = 1;
     }
 
-    if (!this.divided) {
-      // Empty
-      if (this.points.length == 0) {
-        return [];
-      }
-      // Limit to number of points in this QuadTree
-      if (this.points.length < count) {
-        count = this.points.length;
-      }
+    // Limit to number of points in this QuadTree
+    if (this.length == 0) {
+      return [];
+    }
+    if (this.length < count) {
+      return this.points;
     }
 
     // optimized, expanding binary search
