@@ -1,10 +1,7 @@
 // Daniel Shiffman
-// http://codingtra.in
-// http://patreon.com/codingtrain
-
-// QuadTree
-// [video url 1]
-// [video url 2]
+// https://thecodingtrain.com/CodingChallenges/098.1-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.2-quadtree.html
+// https://thecodingtrain.com/CodingChallenges/098.3-quadtree.html
 
 let qtree;
 
@@ -34,6 +31,13 @@ function draw() {
     stroke(0, 255, 0);
     strokeWeight(4);
     point(p.x, p.y);
+
+    let neighbors = qtree.closest(new Point(p.x, p.y), 8);
+    stroke(0, 255, 0, 50);
+    strokeWeight(1);
+    for (let n of neighbors) {
+      line(p.x, p.y, n.x, n.y);
+    }
   }
 }
 
