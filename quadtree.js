@@ -117,6 +117,17 @@ class QuadTree {
     this.divided = false;
   }
 
+  static withDefaults() {
+    if (typeof width === "undefined") {
+      throw new TypeError("No global width defined");
+    }
+    if (typeof height === "undefined") {
+      throw new TypeError("No global height defined");
+    }
+    let bounds = new Rectangle(width / 2, height / 2, width, height);
+    return new QuadTree(bounds, 8);
+  }
+
   toJSON(isChild) {
     let obj = { points: this.points };
     if (this.divided) {
