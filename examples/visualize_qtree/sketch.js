@@ -9,7 +9,7 @@ function setup() {
   createCanvas(600, 600);
   background(255);
   let boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
-  qtree = new QuadTree(boundary, 4);
+  qtree = QuadTree.withDefaults();
   for (let i = 0; i < 300; i++) {
     let x = randomGaussian(width / 2, width / 8);
     let y = randomGaussian(height / 2, height / 8);
