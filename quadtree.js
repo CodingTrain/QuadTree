@@ -117,6 +117,32 @@ class QuadTree {
     this.divided = false;
   }
 
+  static create() {
+    let DEFAULT_CAPACITY = 8;
+    if (arguments.length === 0) {
+      if (typeof width === "undefined") {
+        throw new TypeError("No global width defined");
+      }
+      if (typeof height === "undefined") {
+        throw new TypeError("No global height defined");
+      }
+      let bounds = new Rectangle(width / 2, height / 2, width, height);
+      return new QuadTree(bounds, DEFAULT_CAPACITY);
+    }
+    if (arguments[0] instanceof Rectangle) {
+      let capacity = arguments[1] || DEFAULT_CAPACITY;
+      return new QuadTree(arguments[0], capacity);
+    }
+    if (typeof arguments[0] === "number" &&
+        typeof arguments[1] === "number" &&
+        typeof arguments[2] === "number" &&
+        typeof arguments[3] === "number") {
+      let capacity = arguments[4] || DEFAULT_CAPACITY;
+      return new QuadTree(new Rectangle(arguments[0], arguments[1], arguments[2], arguments[3]), capacity);
+    }
+    throw new TypeError('Invalid parameters');
+  }
+
   toJSON(isChild) {
     let obj = { points: this.points };
     if (this.divided) {
