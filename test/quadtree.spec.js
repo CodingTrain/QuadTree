@@ -441,43 +441,4 @@ describe('QuadTree', () => {
       });
     }
   });
-  describe('withDefaults', () => {
-    it('throws an exception when no global width defined', () => {
-      expect(() => { QuadTree.withDefaults() }).to.throw(TypeError);
-    })
-    it('throws an exception when no global width defined with correct message', () => {
-      expect(() => { QuadTree.withDefaults() }).to.throw('No global width defined');
-    })
-    it('throws an exception when no global height defined', () => {
-      global.width = 600
-      expect(() => { QuadTree.withDefaults() }).to.throw(TypeError);
-    })
-    it('throws an exception when no global height defined with correct message', () => {
-      global.width = 600
-      expect(() => { QuadTree.withDefaults() }).to.throw('No global height defined');
-    })
-    describe('when global values exist', () => {
-      let quadtree;
-      beforeEach(() => {
-        global.width = 800
-        global.height = 600
-        quadtree = QuadTree.withDefaults()
-      })
-      it('sets left to zero', () => {
-        expect(quadtree.boundary.left).to.equal(0)
-      })
-      it('sets right to width', () => {
-        expect(quadtree.boundary.right).to.equal(800)
-      })
-      it('sets top to zero', () => {
-        expect(quadtree.boundary.top).to.equal(0)
-      })
-      it('sets bottom height', () => {
-        expect(quadtree.boundary.bottom).to.equal(600)
-      })
-      it('sets capacity to 8', () => {
-        expect(quadtree.capacity).to.equal(8)
-      })
-    })
-  })
 });
