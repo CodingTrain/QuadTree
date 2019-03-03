@@ -305,48 +305,6 @@ describe('QuadTree', () => {
       });
     });
   });
-  describe('json operations', () => {
-    let quadtree;
-    beforeEach(() => {
-      quadtree = new QuadTree(new Rectangle(0, 0, 40, 40), 2);
-      points = [
-        new Point(-20,  20, { index: 0 }),
-        new Point(-20, -20, { index: 1 }),
-        new Point( 20,  20, { index: 2 }),
-        new Point( 20, -20, { index: 3 })
-      ];
-      points.forEach(point => quadtree.insert(point));
-    });
-    it('throws exception when JSON has no position data', () => {
-      expect(() => { new QuadTree.fromJSON({ points: [] }) }).to.throw(TypeError);
-    });
-    it('saves all data to a JSON object', () => {
-      const obj = quadtree.toJSON();
-      expect(obj.x).to.equal(quadtree.boundary.x);
-      expect(obj.y).to.equal(quadtree.boundary.y);
-      expect(obj.w).to.equal(quadtree.boundary.w);
-      expect(obj.h).to.equal(quadtree.boundary.h);
-      expect(obj.capacity).to.equal(quadtree.capacity);
-      expect(obj.ne.points.length).to.equal(quadtree.northeast.points.length);
-      expect(obj.ne.points[0].userData.index).to.equal(quadtree.northeast.points[0].userData.index);
-      expect(obj.ne.divided).to.be.undefined;
-      expect(obj.nw).to.be.undefined;
-    });
-    it('loads properly from a JSON object', () => {
-      const obj = quadtree.toJSON();
-      const test = QuadTree.fromJSON(obj);
-      expect(test.boundary.x).to.equal(quadtree.boundary.x);
-      expect(test.boundary.y).to.equal(quadtree.boundary.y);
-      expect(test.boundary.w).to.equal(quadtree.boundary.w);
-      expect(test.boundary.h).to.equal(quadtree.boundary.h);
-      expect(test.capacity).to.equal(quadtree.capacity);
-      expect(test.northeast.boundary.x).to.equal(quadtree.northeast.boundary.x);
-      expect(test.northeast.points[0].userData.index).to.equal(quadtree.northeast.points[0].userData.index);
-      expect(test.northwest.divided).to.be.equal(quadtree.northwest.divided);
-      expect(test.southeast.x).to.be.equal(quadtree.southeast.x);
-      expect(test.southwest.y).to.be.equal(quadtree.southwest.y);
-    });
-  });
   describe('closest', () => {
     let quadtree;
     let points;
