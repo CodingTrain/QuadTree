@@ -32,7 +32,7 @@ function draw() {
     strokeWeight(4);
     point(p.x, p.y);
 
-    let neighbors = qtree.closest(new Point(p.x, p.y), 8);
+    let neighbors = qtree.closest(new Point(p.x, p.y), 8, 128);
     stroke(0, 255, 0, 50);
     strokeWeight(1);
     for (let n of neighbors) {
