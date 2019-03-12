@@ -318,14 +318,25 @@ describe('QuadTree', () => {
       ];
       points.forEach(point => quadtree.insert(point));
     });
+    it('requires a point to query', () => {
+      expect(() => { quadtree.closest() }).to.throw("Method 'closest' needs a point");
+    });
     it('returns empty array when quadtree is empty', () => {
       quadtree = new QuadTree(new Rectangle(0, 0, 100, 100), 4);
       found = quadtree.closest(new Point(0, 0), 1);
       expect(found).to.have.length(0);
     });
+    it('returns all items when number requested exceeds QuadTree contents', () => {
+      found = quadtree.closest(new Point(0, 0), 10);
+      expect(found).to.have.length(4);
+    });
     it('returns closest item', () => {
       found = quadtree.closest(new Point(0, 0), 1);
       expect(found).to.contain(points[0]);
+    });
+    it('returns default number of items (one)', () => {
+      found = quadtree.closest(new Point(0, 0));
+      expect(found).to.have.length(1);
     });
     it('returns correct number of items (one)', () => {
       found = quadtree.closest(new Point(0, 0), 1);
@@ -343,10 +354,6 @@ describe('QuadTree', () => {
       found = quadtree.closest(new Point(-30000, 0), 1);
       expect(found).to.have.length(1);
       expect(found).to.contain(points[0]);
-    });
-    it('returns all items when number requested exceeds QuadTree contents', () => {
-      found = quadtree.closest(new Point(0, 0), 10);
-      expect(found).to.have.length(4);
     });
   });
   describe('size', () => {

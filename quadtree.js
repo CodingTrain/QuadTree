@@ -280,12 +280,12 @@ class QuadTree {
     return found;
   }
 
-  closest(point, count, startingSize) {
+  closest(point, count, maxDistance) {
+    if (typeof point === "undefined") {
+      throw TypeError("Method 'closest' needs a point");
+    }
     if (typeof count === "undefined") {
       count = 1;
-    }
-    if (typeof startingSize === "undefined") {
-      startingSize = 1;
     }
 
     // Limit to number of points in this QuadTree
@@ -296,23 +296,49 @@ class QuadTree {
       return this.points;
     }
 
-    // optimized, expanding binary search
-    // start with a small circle, rapidly expand, slowly shrink
-    let radius = startingSize;
-    let limit = 16;
-    while (true) {
+    if (typeof maxDistance === "undefined") {
+      // A circle that contains the entire QuadTree
+      const outerReach = Math.sqrt(
+        Math.pow(this.boundary.w, 2) + Math.pow(this.boundary.h, 2)
+      );
+      // Distance of query point from center
+      const pointDistance = Math.sqrt(
+        Math.pow(point.x, 2) + Math.pow(point.y, 2)
+      );
+      // One QuadTree size away from the query point
+      maxDistance = outerReach + pointDistance;
+    }
+
+    // Binary search with Circle queries
+    let inner = 0;
+    let outer = maxDistance;
+    let limit = 8; // Limit to avoid infinite loops caused by ties
+    let points;
+    while (limit > 0) {
+      const radius = (inner + outer) / 2;
       const range = new Circle(point.x, point.y, radius);
-      const points = this.query(range);
+      points = this.query(range);
       if (points.length === count) {
         return points; // Return when we hit the right size
       } else if (points.length < count) {
-        radius *= 2;
-      } else if (limit-- <= 0) {
-        return points.slice(0, count); // Slice to return correct count (breaks ties)
+        inner = radius;
       } else {
-        radius /= 3;
+        outer = radius;
+        limit --;
       }
     }
+    // Sort by squared distance
+    points.sort(
+      (a, b) => {
+        const aDist = Math.pow(point.x - a.x, 2) +
+          Math.pow(point.y - a.y, 2);
+        const bDist = Math.pow(point.x - b.x, 2) +
+          Math.pow(point.y - b.y, 2);
+        return aDist - bDist;
+      }
+    );
+    // Slice to return correct count (breaks ties)
+    return points.slice(0, count);
   }
 
   forEach(fn) {
