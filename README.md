@@ -44,3 +44,4 @@ This will output to the `coverage` folder where you can few test coverage by ope
 
 ### Ports to other languages
  * Carla de Beer (Processing port) - [GitHub](https://github.com/Carla-de-Beer/Processing/tree/master/QuadTree)
+ * Alix Poulsen (Kit port) - [Github](https://github.com/AlexPoulsen/tree)
