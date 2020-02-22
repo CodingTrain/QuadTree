@@ -13,11 +13,12 @@ class Point {
 }
 
 class Rectangle {
-  constructor(x, y, w, h) {
+  constructor(x, y, w, h, data) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.userData = data;
   }
 
   get left() {
@@ -276,10 +277,88 @@ class QuadTree {
       this.southwest.query(range, found);
       this.southeast.query(range, found);
     }
+    
 
     return found;
   }
 
+  delete(range,id) {
+
+
+    if (!range.intersects(this.boundary)) {
+      return
+    }
+
+
+    for( var i = 0; i < this.points.length; i++ ){
+      var p = this.points[i]
+      if (range.contains(p)) {
+        if(p.userData.id == id){
+          this.points.splice(i,1);
+        }
+      }
+    }
+
+    if (this.divided) {
+      this.northwest.delete(range, id);
+      this.northeast.delete(range, id);
+      this.southwest.delete(range, id);
+      this.southeast.delete(range, id);
+    }
+  }
+
+  movePoint(range,id,x,y) {
+
+
+    if (!range.intersects(this.boundary)) {
+      return
+    }
+
+
+    for( var i = 0; i < this.points.length; i++ ){
+      var p = this.points[i]
+      if (range.contains(p)) {
+        if(p.userData.id == id){
+          this.points[i].x = x;
+          this.points[i].y = y;
+        }
+      }
+    }
+
+    if (this.divided) {
+      this.northwest.movePoint(range,id,x,y);
+      this.northeast.movePoint(range,id,x,y);
+      this.southwest.movePoint(range,id,x,y);
+      this.southeast.movePoint(range,id,x,y);
+    }
+  }
+
+  deleteInRange(range) {
+    //Index of what needs to be deleted
+    var deleteArray = [];
+
+    for( var i = 0; i < this.points.length; i++ ){
+      var p = this.points[i]
+      if (range.contains(p)) {
+        deleteArray.push(i)
+      }
+    }
+
+    //When deleted all index change , so the delta fix it
+    var delta = 0
+    for(var i = 0; i < deleteArray.length; i++){
+      this.points.splice(i-delta,1);
+      delta++
+    }
+
+    if (this.divided) {
+      this.northwest.deleteInRange(range);
+      this.northeast.deleteInRange(range);
+      this.southwest.deleteInRange(range);
+      this.southeast.deleteInRange(range);
+    }
+  }
+    
   closest(point, count, maxDistance) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
