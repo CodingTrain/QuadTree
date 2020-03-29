@@ -54,9 +54,6 @@ function show(qtree) {
   }
 
   if (qtree.divided) {
-    show(qtree.northeast);
-    show(qtree.northwest);
-    show(qtree.southeast);
-    show(qtree.southwest);
+    qtree.children.forEach(show);
   }
 }

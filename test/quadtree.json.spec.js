@@ -44,19 +44,19 @@ describe('QuadTree', () => {
         expect(obj.capacity).to.equal(quadtree.capacity);
       })
       it('new object ne inherits length', () => {
-        expect(obj.ne.points.length).to.equal(quadtree.northeast.points.length);
+        expect(obj.ne.points.length).to.equal(quadtree.children[0].points.length);
       })
       it('new object nw inherits length', () => {
-        expect(obj.nw.points.length).to.equal(quadtree.northwest.points.length);
+        expect(obj.nw.points.length).to.equal(quadtree.children[1].points.length);
       })
       it('new object se inherits length', () => {
-        expect(obj.se.points.length).to.equal(quadtree.southeast.points.length);
+        expect(obj.se.points.length).to.equal(quadtree.children[2].points.length);
       })
       it('new object sw inherits length', () => {
-        expect(obj.sw.points.length).to.equal(quadtree.southwest.points.length);
+        expect(obj.sw.points.length).to.equal(quadtree.children[3].points.length);
       })
       it('objects inherit user data', () => {
-        expect(obj.ne.points[0].userData.index).to.equal(quadtree.northeast.points[0].userData.index);
+        expect(obj.ne.points[0].userData.index).to.equal(quadtree.children[0].points[0].userData.index);
       })
       it('child objects aren\'t divided', () => {
         expect(obj.nw.ne).to.be.undefined;
@@ -83,11 +83,11 @@ describe('QuadTree', () => {
       expect(test.boundary.w).to.equal(quadtree.boundary.w);
       expect(test.boundary.h).to.equal(quadtree.boundary.h);
       expect(test.capacity).to.equal(quadtree.capacity);
-      expect(test.northeast.boundary.x).to.equal(quadtree.northeast.boundary.x);
-      expect(test.northeast.points[0].userData.index).to.equal(quadtree.northeast.points[0].userData.index);
-      expect(test.northwest.divided).to.be.equal(quadtree.northwest.divided);
-      expect(test.southeast.x).to.be.equal(quadtree.southeast.x);
-      expect(test.southwest.y).to.be.equal(quadtree.southwest.y);
+      expect(test.children[0].boundary.x).to.equal(quadtree.children[0].boundary.x);
+      expect(test.children[0].points[0].userData.index).to.equal(quadtree.children[0].points[0].userData.index);
+      expect(test.children[1].divided).to.be.equal(quadtree.children[1].divided);
+      expect(test.children[2].x).to.be.equal(quadtree.children[2].x);
+      expect(test.children[3].y).to.be.equal(quadtree.children[3].y);
     });
   });
 });
