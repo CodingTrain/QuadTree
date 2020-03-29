@@ -262,10 +262,7 @@ class QuadTree {
       this.subdivide();
     }
 
-    for(let child of this.children) {
-      if (child.insert(point)) return true;
-    }
-    return false;
+    return this.children.reduce((b, c) => b || c.insert(point), false);
   }
 
   query(range) {
@@ -274,8 +271,7 @@ class QuadTree {
     }
 
     return this.children
-      .map(c => c.query(range))
-      .reduce((a, c) => a.concat(c), this.points.filter(p => range.contains(p)));
+      .reduce((a, c) => a.concat(c.query(range)), this.points.filter(p => range.contains(p)));
   }
 
   closest(point, count, maxDistance) {
