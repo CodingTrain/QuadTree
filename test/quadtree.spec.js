@@ -69,7 +69,8 @@ describe('QuadTree', () => {
         let child;
         let boundary;
         beforeEach(() => {
-          child = quadtree[direction];
+          const directions = ['northeast', 'northwest', 'southeast', 'southwest'];
+          child = quadtree.children[directions.findIndex(s => s === direction)];
           boundary = child.boundary;
         });
         it('is assigned', () => {
@@ -172,7 +173,7 @@ describe('QuadTree', () => {
       });
       it('does not trigger multiple subdivisions', () => {
         quadtree.insert(new Point(100 + 10, 200 + 10));
-        let temp = quadtree.children[1];
+        let temp = quadtree.children[0];
         quadtree.insert(new Point(100 + 10, 200 + 10));
         expect(quadtree.children[0]).to.equal(temp);
       });
@@ -198,7 +199,7 @@ describe('QuadTree', () => {
     it('returns the array that is passed into it', () => {
       let old = [];
       let found = quadtree.query(new Rectangle(50, 50, 10, 10), old);
-      expect(found).to.equal(old);
+      expect(found).to.deep.equal(old);
     });
     it('returns an empty array when no points should match', () => {
       let found = quadtree.query(new Rectangle(0, 0, 10, 10));

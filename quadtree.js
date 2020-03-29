@@ -36,10 +36,21 @@ class Rectangle {
     return this.y + this.h / 2;
   }
 
-  ne = () => new Rectangle(this.x + this.w, this.y - this.h, this.w / 2, this.h / 2);
-  nw = () => new Rectangle(this.x - this.w, this.y - this.h, this.w / 2, this.h / 2);
-  se = () => new Rectangle(this.x + this.w, this.y + this.h, this.w / 2, this.h / 2);
-  sw = () => new Rectangle(this.x - this.w, this.y + this.h, this.w / 2, this.h / 2);
+  ne() {
+    return new Rectangle(this.x + this.w / 2, this.y - this.h / 2, this.w / 2, this.h / 2);
+  }
+
+  nw() {
+    return new Rectangle(this.x - this.w / 2, this.y - this.h / 2, this.w / 2, this.h / 2);
+  }
+
+  se() {
+    return new Rectangle(this.x + this.w / 2, this.y + this.h / 2, this.w / 2, this.h / 2);
+  }
+
+  sw() {
+    return new Rectangle(this.x - this.w / 2, this.y + this.h / 2, this.w / 2, this.h / 2);
+  }
 
   contains(point) {
     return (point.x >= this.x - this.w &&
@@ -153,7 +164,7 @@ class QuadTree {
     let obj = { points: this.points };
     if (this.divided) {
       if (this.children[0].points.length > 0) {
-        obj.ne = this.childen[0].toJSON(true);
+        obj.ne = this.children[0].toJSON(true);
       }
       if (this.children[1].points.length > 0) {
         obj.nw = this.children[1].toJSON(true);
@@ -251,7 +262,10 @@ class QuadTree {
       this.subdivide();
     }
 
-    return this.children.reduce((b, c) => b || c.insert(point), false);
+    for(let child of this.children) {
+      if (child.insert(point)) return true;
+    }
+    return false;
   }
 
   query(range) {
@@ -259,7 +273,9 @@ class QuadTree {
       return [];
     }
 
-    return this.children.reduce((a, c) => a.concat(c.query(range)), this.points.filter(range.contains));
+    return this.children
+      .map(c => c.query(range))
+      .reduce((a, c) => a.concat(c), this.points.filter(p => range.contains(p)));
   }
 
   closest(point, count, maxDistance) {
@@ -346,7 +362,6 @@ class QuadTree {
   }
 
   get length() {
-    console.log('blah');
     return this.children.reduce((a, c) => a + c.length, this.points.length);
   }
 }
