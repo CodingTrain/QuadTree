@@ -53,7 +53,5 @@ function show(qtree) {
     point(p.x, p.y);
   }
 
-  if (qtree.divided) {
-    qtree.children.forEach(show);
-  }
+  qtree.children.forEach(show);
 }
