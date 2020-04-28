@@ -45,8 +45,8 @@ function draw() {
 
 function show(qtree, range) {
   noFill();
-  rectMode(CENTER);
   strokeWeight(1);
+  rectMode(CENTER);
   stroke(255, 41);
   if (range.intersects(qtree.boundary)) {
     stroke(255);
