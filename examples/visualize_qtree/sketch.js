@@ -44,19 +44,6 @@ function draw() {
 }
 
 function show(qtree, range) {
-  if (qtree.divided) {
-    show(qtree.northeast, range);
-    show(qtree.northwest, range);
-    show(qtree.southeast, range);
-    show(qtree.southwest, range);
-  }
-
-  stroke(255);
-  strokeWeight(2);
-  for (let p of qtree.points) {
-    point(p.x, p.y);
-  }
-
   noFill();
   rectMode(CENTER);
   strokeWeight(1);
@@ -64,11 +51,18 @@ function show(qtree, range) {
   if (range.intersects(qtree.boundary)) {
     stroke(255);
   }
+  rect(qtree.boundary.x, qtree.boundary.y, qtree.boundary.w * 2, qtree.boundary.h * 2);
 
-  rect(
-    qtree.boundary.x,
-    qtree.boundary.y,
-    qtree.boundary.w * 2,
-    qtree.boundary.h * 2
-  );
+  stroke(255);
+  strokeWeight(2);
+  for (let p of qtree.points) {
+    point(p.x, p.y);
+  }
+
+  if (qtree.divided) {
+    show(qtree.northeast, range);
+    show(qtree.northwest, range);
+    show(qtree.southeast, range);
+    show(qtree.southwest, range);
+  }
 }
