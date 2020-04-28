@@ -309,6 +309,12 @@ class QuadTree {
       maxDistance = outerReach + pointDistance;
     }
 
+    let maxDistanceTest = this.query(new Circle(point.x, point.y, maxDistance));
+    if (maxDistanceTest.length < count) {
+      console.error("Nothing inside maxDistance");
+      return maxDistanceTest;
+    }
+
     // Binary search with Circle queries
     let inner = 0;
     let outer = maxDistance;
