@@ -20,10 +20,10 @@ function setup() {
 
 function draw() {
   background(0);
-  show(qtree);
 
-  // let range = new Rectangle(mouseX, mouseY, 25, 25);
   let range = new Circle(mouseX, mouseY, 64);
+  show(qtree, range);
+  stroke("pink");
   ellipse(range.x, range.y, range.r * 2);
 
   let points = qtree.query(range);
@@ -32,31 +32,37 @@ function draw() {
     strokeWeight(4);
     point(p.x, p.y);
 
-    let neighbors = qtree.closest(new Point(p.x, p.y), 8, 128);
-    stroke(0, 255, 0, 50);
-    strokeWeight(1);
-    for (let n of neighbors) {
-      line(p.x, p.y, n.x, n.y);
+    if (mouseIsPressed) {
+      let neighbors = qtree.closest(new Point(p.x, p.y), 8);
+      stroke(0, 255, 0, 50);
+      strokeWeight(1);
+      for (let n of neighbors) {
+        line(p.x, p.y, n.x, n.y);
+      }
     }
   }
 }
 
-function show(qtree) {
-  stroke(255);
+function show(qtree, range) {
   noFill();
   strokeWeight(1);
   rectMode(CENTER);
+  stroke(255, 41);
+  if (range.intersects(qtree.boundary)) {
+    stroke(255);
+  }
   rect(qtree.boundary.x, qtree.boundary.y, qtree.boundary.w * 2, qtree.boundary.h * 2);
 
+  stroke(255);
+  strokeWeight(2);
   for (let p of qtree.points) {
-    strokeWeight(2);
     point(p.x, p.y);
   }
 
   if (qtree.divided) {
-    show(qtree.northeast);
-    show(qtree.northwest);
-    show(qtree.southeast);
-    show(qtree.southwest);
+    show(qtree.northeast, range);
+    show(qtree.northwest, range);
+    show(qtree.southeast, range);
+    show(qtree.southwest, range);
   }
 }
