@@ -251,8 +251,8 @@ class QuadTree {
       
       this.subdivide();
       
-      let point;
-      while (point = this.points.shift()) this.insert(point);
+      let p;
+      while (p = this.points.shift()) this.insert(p);
     }
 
     return (this.northeast.insert(point) || this.northwest.insert(point) ||
