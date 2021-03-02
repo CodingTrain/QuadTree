@@ -366,7 +366,7 @@ describe('QuadTree', () => {
       expect(found).to.have.length(0);
     });
   });
-  describe('size', () => {
+  describe('length', () => {
     let quadtree;
     beforeEach(() => {
       let rect = new Rectangle(100, 100, 20, 20);
