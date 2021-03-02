@@ -297,7 +297,7 @@ class QuadTree {
     }
 
     if (typeof maxDistance === "undefined") {
-      // A circle that contains the entire QuadTree
+      // A circle as big as the QuadTree's boundary
       const outerReach = Math.sqrt(
         Math.pow(this.boundary.w, 2) + Math.pow(this.boundary.h, 2)
       );
@@ -305,7 +305,7 @@ class QuadTree {
       const pointDistance = Math.sqrt(
         Math.pow(point.x, 2) + Math.pow(point.y, 2)
       );
-      // One QuadTree size away from the query point
+      // Together, a circle that encompasses the whole QuadTree
       maxDistance = outerReach + pointDistance;
     } else {
       // Make sure the largest search (maxDistance) contains enough points
@@ -328,8 +328,10 @@ class QuadTree {
       if (points.length === count) {
         return points; // Return when we hit the right size
       } else if (points.length < count) {
+        // Grow
         inner = radius;
       } else {
+        // Shrink
         outer = radius;
         limit --;
       }
