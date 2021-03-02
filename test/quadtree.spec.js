@@ -355,6 +355,16 @@ describe('QuadTree', () => {
       expect(found).to.have.length(1);
       expect(found).to.contain(points[0]);
     });
+    // Supplied maxDistance
+    it('limits search to maxDistance', () => {
+      found = quadtree.closest(new Point(0, 0), 3, 25);
+      expect(found).to.have.length(1);
+      expect(found).to.contain(points[0]);
+    });
+    it('gracefully fails search if nothing within maxDistance', () => {
+      found = quadtree.closest(new Point(-100, 0), 3, 25);
+      expect(found).to.have.length(0);
+    });
   });
   describe('length', () => {
     let quadtree;
