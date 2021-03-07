@@ -37,21 +37,19 @@ class Rectangle {
   }
 
   contains(point) {
-    return (point.x >= this.x - this.w &&
-      point.x <= this.x + this.w &&
-      point.y >= this.y - this.h &&
-      point.y <= this.y + this.h);
+    return (
+      this.x - this.w <= point.x && point.x < this.x + this.w &&
+      this.y - this.h <= point.y && point.y < this.y + this.h
+    );
   }
 
 
   intersects(range) {
-    return !(range.x - range.w > this.x + this.w ||
-      range.x + range.w < this.x - this.w ||
-      range.y - range.h > this.y + this.h ||
-      range.y + range.h < this.y - this.h);
+    return !(
+      this.x + this.w < range.x - range.w || range.x + range.w < this.x - this.w ||
+      this.y + this.h < range.y - range.h || range.y + range.h < this.y - this.h
+    );
   }
-
-
 }
 
 // circle class for a circle shaped query
