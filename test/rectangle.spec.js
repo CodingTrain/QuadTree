@@ -57,9 +57,9 @@ describe('Rectangle', () => {
       let point = new Point(left - 1, cy);
       expect(rect.contains(point)).not.to.be.true;
     });
-    it('returns true when point on right edge', () => {
+    it('returns false when point on right edge', () => {
       let point = new Point(right, cy);
-      expect(rect.contains(point)).to.be.true;
+      expect(rect.contains(point)).to.be.false;
     });
     it('returns true when point inside right edge', () => {
       let point = new Point(right - 1, cy);
@@ -81,9 +81,9 @@ describe('Rectangle', () => {
       let point = new Point(cx, top - 1);
       expect(rect.contains(point)).not.to.be.true;
     });
-    it('returns true when point on bottom edge', () => {
+    it('returns false when point on bottom edge', () => {
       let point = new Point(cx, bottom);
-      expect(rect.contains(point)).to.be.true;
+      expect(rect.contains(point)).to.be.false;
     });
     it('returns true when point inside bottom edge', () => {
       let point = new Point(cx, bottom - 1);
