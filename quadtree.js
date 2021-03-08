@@ -88,8 +88,8 @@ class Circle {
     // radius of the circle
     let r = this.r;
 
-    let w = range.w;
-    let h = range.h;
+    let w = range.w / 2;
+    let h = range.h / 2;
 
     let edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
 
