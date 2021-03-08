@@ -115,10 +115,10 @@ describe('QuadTree', () => {
     it('marks subdivided as true', () => {
       expect(quadtree.divided).to.be.true;
     });
-    childTests('northwest', cx - w / 2, cy - h / 2);
-    childTests('northeast', cx + w / 2, cy - h / 2);
-    childTests('southwest', cx - w / 2, cy + h / 2);
-    childTests('southeast', cx + w / 2, cy + h / 2);
+    childTests('northwest', cx - w / 4, cy - h / 4);
+    childTests('northeast', cx + w / 4, cy - h / 4);
+    childTests('southwest', cx - w / 4, cy + h / 4);
+    childTests('southeast', cx + w / 4, cy + h / 4);
   });
   describe('insert', () => {
     let rect;
@@ -165,11 +165,11 @@ describe('QuadTree', () => {
         expect(quadtree.insert(new Point(100 - 10, 200 - 10))).to.be.true;
       });
       it('correctly adds to northeast', () => {
-        quadtree.insert(new Point(100 + 10, 200 - 10));
+        quadtree.insert(new Point(100 + 5, 200 - 10));
         expect(quadtree.northeast.points).to.have.length(1);
       });
       it('returns true when added to northeast', () => {
-        expect(quadtree.insert(new Point(100 + 10, 200 - 10))).to.be.true;
+        expect(quadtree.insert(new Point(100 + 5, 200 - 10))).to.be.true;
       });
       it('correctly adds to southwest', () => {
         quadtree.insert(new Point(100 - 10, 200 + 10));
@@ -179,16 +179,16 @@ describe('QuadTree', () => {
         expect(quadtree.insert(new Point(100 - 10, 200 + 10))).to.be.true;
       });
       it('correctly adds to southeast', () => {
-        quadtree.insert(new Point(100 + 10, 200 + 10));
+        quadtree.insert(new Point(100 + 5, 200 + 10));
         expect(quadtree.southeast.points).to.have.length(1);
       });
       it('returns true when added to southeast', () => {
-        expect(quadtree.insert(new Point(100 + 10, 200 + 10))).to.be.true;
+        expect(quadtree.insert(new Point(100 + 5, 200 + 10))).to.be.true;
       });
       it('does not trigger multiple subdivisions', () => {
-        quadtree.insert(new Point(100 + 10, 200 + 10));
+        quadtree.insert(new Point(100 + 5, 200 + 10));
         let temp = quadtree.northeast;
-        quadtree.insert(new Point(100 + 10, 200 + 10));
+        quadtree.insert(new Point(100 + 5, 200 + 10));
         expect(quadtree.northeast).to.equal(temp);
       });
     });
@@ -280,11 +280,11 @@ describe('QuadTree', () => {
         expect(found).to.contain(points[5]);
       });
       it('returns correct number of points from multiple regions', () => {
-        let found = quadtree.query(new Rectangle(0, -25, 50, 10));
+        let found = quadtree.query(new Rectangle(0, -25, 60, 10));
         expect(found).to.have.length(4);
       });
       it('returns correct points from multiple regions', () => {
-        let found = quadtree.query(new Rectangle(0, -25, 50, 10));
+        let found = quadtree.query(new Rectangle(0, -25, 60, 10));
         expect(found).to.contain(points[0]);
         expect(found).to.contain(points[4]);
         expect(found).to.contain(points[1]);
@@ -313,8 +313,8 @@ describe('QuadTree', () => {
       points = [
         new Point(20, 0),
         new Point(40, 0),
-        new Point(60, 0),
-        new Point(80, 0)
+        new Point(-30, 0),
+        new Point(-40, 0)
       ];
       points.forEach(point => quadtree.insert(point));
     });
@@ -353,7 +353,7 @@ describe('QuadTree', () => {
     it('returns correct number of items when far away', () => {
       found = quadtree.closest(new Point(-30000, 0), 1);
       expect(found).to.have.length(1);
-      expect(found).to.contain(points[0]);
+      expect(found).to.contain(points[3]);
     });
     // Supplied maxDistance
     it('limits search to maxDistance', () => {

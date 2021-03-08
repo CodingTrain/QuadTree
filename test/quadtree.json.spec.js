@@ -7,14 +7,14 @@ describe('QuadTree', () => {
     beforeEach(() => {
       quadtree = new QuadTree(new Rectangle(0, 0, 40, 40), 2);
       points = [
-        new Point(-20, 20, { index: 0 }),
-        new Point(-20, -20, { index: 1 }),
-        new Point(20, 20, { index: 2 }),
-        new Point(20, -20, { index: 3 }),
-        new Point(-25, 25, { index: 4 }),
-        new Point(-25, -25, { index: 5 }),
-        new Point(25, 25, { index: 6 }),
-        new Point(25, -25, { index: 7 })
+        new Point(-10, 10, { index: 0 }),
+        new Point(-10, -10, { index: 1 }),
+        new Point(10, 10, { index: 2 }),
+        new Point(10, -10, { index: 3 }),
+        new Point(-15, 15, { index: 4 }),
+        new Point(-15, -15, { index: 5 }),
+        new Point(15, 15, { index: 6 }),
+        new Point(15, -15, { index: 7 })
       ];
       points.forEach(point => quadtree.insert(point));
     });

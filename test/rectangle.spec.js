@@ -1,7 +1,7 @@
 const {expect} = require('chai');
 let { Rectangle, Point } = require('../quadtree');
 
-describe.only('Rectangle', () => {
+describe('Rectangle', () => {
   describe('on construction', () => {
     it('sets x', () => {
       let rect = new Rectangle(12, 23, 40, 83);
