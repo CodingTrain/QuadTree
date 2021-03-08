@@ -24,18 +24,7 @@ class Rectangle {
     this.bottom = y + h / 2;
   }
 
-  // function used to determine if a point should be added into this region
-  // if it lies on the right or bottom edge then it should not be in this region
   contains(point) {
-    return (
-      this.left <= point.x && point.x < this.right &&
-      this.top <= point.y && point.y < this.bottom
-    );
-  }
-
-  // function used to determine if a point is in a query region
-  // if the point is on any edge then it should be counted for the query
-  queryContains(point) {
     return (
       this.left <= point.x && point.x <= this.right &&
       this.top <= point.y && point.y <= this.bottom
@@ -72,7 +61,7 @@ class Circle {
     this.rSquared = this.r * this.r;
   }
 
-  queryContains(point) {
+  contains(point) {
     // check if the point is in the circle by checking if the euclidean distance of
     // the point and the center of the circle if smaller or equal to the radius of
     // the circle
@@ -270,7 +259,7 @@ class QuadTree {
     }
 
     for (let p of this.points) {
-      if (range.queryContains(p)) {
+      if (range.contains(p)) {
         found.push(p);
       }
     }

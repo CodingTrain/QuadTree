@@ -40,7 +40,7 @@ describe('Circle', () => {
       { desc: 'outside right', x: cx + r + 1, y: cy, in: false }
     ].forEach(element => {
       it(`returns ${element.in} for ${element.desc} (${element.x}, ${element.y})`, () => {
-        expect(circle.queryContains(element)).to.equal(element.in);
+        expect(circle.contains(element)).to.equal(element.in);
       });
     });
   });
