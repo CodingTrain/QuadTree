@@ -1,7 +1,7 @@
 const {expect} = require('chai');
 let { Rectangle, Point } = require('../quadtree');
 
-describe('Rectangle', () => {
+describe.only('Rectangle', () => {
   describe('on construction', () => {
     it('sets x', () => {
       let rect = new Rectangle(12, 23, 40, 83);
@@ -36,10 +36,10 @@ describe('Rectangle', () => {
       let w = 25;
       let h = 30;
       rect = new Rectangle(cx, cy, w, h);;
-      left = cx - w;
-      right = cx + w;
-      top = cy - h;
-      bottom = cy + h;
+      left = rect.left;
+      right = rect.right;
+      top = rect.top;
+      bottom = rect.bottom;
     });
     it('returns true when point is in the center', () => {
       let point = new Point(cx, cy);
