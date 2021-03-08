@@ -45,8 +45,8 @@ class Rectangle {
 
   intersects(range) {
     return !(
-      this.x + this.w < range.x - range.w || range.x + range.w < this.x - this.w ||
-      this.y + this.h < range.y - range.h || range.y + range.h < this.y - this.h
+      this.right < range.left || range.right < this.left ||
+      this.bottom < range.top || range.bottom < this.top
     );
   }
 
