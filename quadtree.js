@@ -18,22 +18,10 @@ class Rectangle {
     this.y = y;
     this.w = w;
     this.h = h;
-  }
-
-  get left() {
-    return this.x - this.w / 2;
-  }
-
-  get right() {
-    return this.x + this.w / 2;
-  }
-
-  get top() {
-    return this.y - this.h / 2;
-  }
-
-  get bottom() {
-    return this.y + this.h / 2;
+    this.left = x - w / 2;
+    this.right = x + w / 2;
+    this.top = y - h / 2;
+    this.bottom = y + h / 2;
   }
 
   contains(point) {
