@@ -231,6 +231,10 @@ describe('QuadTree', () => {
       let found = quadtree.query(new Rectangle(25, 25, 10, 10));
       expect(found).to.contain(points[3]);
     });
+    it('returns an item on the right edge of the query region', () => {
+      let found = quadtree.query(new Rectangle(20, 20, 10, 10));
+      expect(found).to.contain(points[3]);
+    });
     describe('when a subdivision occurs', () => {
       beforeEach(() => {
         points.push(new Point(-26, -26));
