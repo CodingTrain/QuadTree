@@ -131,7 +131,10 @@ describe('QuadTree', () => {
       expect(quadtree.insert(new Point(10, 20))).to.be.false;
     });
     it('does not add to points array when boundary does not contain point', () => {
-      quadtree.insert(new Point(10, 20));
+      quadtree.insert(new Point(89, 200));
+      quadtree.insert(new Point(111, 200));
+      quadtree.insert(new Point(100, 174));
+      quadtree.insert(new Point(100, 226));
       expect(quadtree.points).to.have.length(0);
     });
     it('returns true when capacity not hit and boundary does contain point', () => {
