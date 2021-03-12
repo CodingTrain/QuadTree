@@ -18,40 +18,38 @@ class Rectangle {
     this.y = y;
     this.w = w;
     this.h = h;
-  }
-
-  get left() {
-    return this.x - this.w / 2;
-  }
-
-  get right() {
-    return this.x + this.w / 2;
-  }
-
-  get top() {
-    return this.y - this.h / 2;
-  }
-
-  get bottom() {
-    return this.y + this.h / 2;
+    this.left = x - w / 2;
+    this.right = x + w / 2;
+    this.top = y - h / 2;
+    this.bottom = y + h / 2;
   }
 
   contains(point) {
-    return (point.x >= this.x - this.w &&
-      point.x <= this.x + this.w &&
-      point.y >= this.y - this.h &&
-      point.y <= this.y + this.h);
+    return (
+      this.left <= point.x && point.x <= this.right &&
+      this.top <= point.y && point.y <= this.bottom
+    );
   }
-
 
   intersects(range) {
-    return !(range.x - range.w > this.x + this.w ||
-      range.x + range.w < this.x - this.w ||
-      range.y - range.h > this.y + this.h ||
-      range.y + range.h < this.y - this.h);
+    return !(
+      this.right < range.left || range.right < this.left ||
+      this.bottom < range.top || range.bottom < this.top
+    );
   }
 
-
+  subdivide(quadrant) {
+    switch (quadrant) {
+      case 'ne':
+        return new Rectangle(this.x + this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);
+      case 'nw':
+        return new Rectangle(this.x - this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);
+      case 'se':
+        return new Rectangle(this.x + this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);
+      case 'sw':
+        return new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);
+    }
+  }
 }
 
 // circle class for a circle shaped query
@@ -79,8 +77,8 @@ class Circle {
     // radius of the circle
     let r = this.r;
 
-    let w = range.w;
-    let h = range.h;
+    let w = range.w / 2;
+    let h = range.h / 2;
 
     let edges = Math.pow((xDist - w), 2) + Math.pow((yDist - h), 2);
 
@@ -195,24 +193,24 @@ class QuadTree {
       let h = qt.boundary.h / 2;
 
       if ("ne" in obj) {
-        qt.northeast = QuadTree.fromJSON(obj.ne, x + w, y - h, w, h, capacity);
+        qt.northeast = QuadTree.fromJSON(obj.ne, x + w/2, y - h/2, w, h, capacity);
       } else {
-        qt.northeast = new QuadTree(new Rectangle(x + w, y - h, w, h), capacity);
+        qt.northeast = new QuadTree(qt.boundary.subdivide('ne'), capacity);
       }
       if ("nw" in obj) {
-        qt.northwest = QuadTree.fromJSON(obj.nw, x - w, y - h, w, h, capacity);
+        qt.northwest = QuadTree.fromJSON(obj.nw, x - w/2, y - h/2, w, h, capacity);
       } else {
-        qt.northwest = new QuadTree(new Rectangle(x - w, y - h, w, h), capacity);
+        qt.northwest = new QuadTree(qt.boundary.subdivide('nw'), capacity);
       }
       if ("se" in obj) {
-        qt.southeast = QuadTree.fromJSON(obj.se, x + w, y + h, w, h, capacity);
+        qt.southeast = QuadTree.fromJSON(obj.se, x + w/2, y + h/2, w, h, capacity);
       } else {
-        qt.southeast = new QuadTree(new Rectangle(x + w, y + h, w, h), capacity);
+        qt.southeast = new QuadTree(qt.boundary.subdivide('se'), capacity);
       }
       if ("sw" in obj) {
-        qt.southwest = QuadTree.fromJSON(obj.sw, x - w, y + h, w, h, capacity);
+        qt.southwest = QuadTree.fromJSON(obj.sw, x - w/2, y + h/2, w, h, capacity);
       } else {
-        qt.southwest = new QuadTree(new Rectangle(x - w, y + h, w, h), capacity);
+        qt.southwest = new QuadTree(qt.boundary.subdivide('sw'), capacity);
       }
 
       qt.divided = true;
@@ -221,19 +219,10 @@ class QuadTree {
   }
 
   subdivide() {
-    let x = this.boundary.x;
-    let y = this.boundary.y;
-    let w = this.boundary.w / 2;
-    let h = this.boundary.h / 2;
-
-    let ne = new Rectangle(x + w, y - h, w, h);
-    this.northeast = new QuadTree(ne, this.capacity);
-    let nw = new Rectangle(x - w, y - h, w, h);
-    this.northwest = new QuadTree(nw, this.capacity);
-    let se = new Rectangle(x + w, y + h, w, h);
-    this.southeast = new QuadTree(se, this.capacity);
-    let sw = new Rectangle(x - w, y + h, w, h);
-    this.southwest = new QuadTree(sw, this.capacity);
+    this.northeast = new QuadTree(this.boundary.subdivide('ne'), this.capacity);
+    this.northwest = new QuadTree(this.boundary.subdivide('nw'), this.capacity);
+    this.southeast = new QuadTree(this.boundary.subdivide('se'), this.capacity);
+    this.southwest = new QuadTree(this.boundary.subdivide('sw'), this.capacity);
 
     this.divided = true;
   }
@@ -252,8 +241,12 @@ class QuadTree {
       this.subdivide();
     }
 
-    return (this.northeast.insert(point) || this.northwest.insert(point) ||
-      this.southeast.insert(point) || this.southwest.insert(point));
+    return (
+      this.northeast.insert(point) ||
+      this.northwest.insert(point) ||
+      this.southeast.insert(point) ||
+      this.southwest.insert(point)
+    );
   }
 
   query(range, found) {
@@ -299,7 +292,7 @@ class QuadTree {
     if (typeof maxDistance === "undefined") {
       // A circle as big as the QuadTree's boundary
       const outerReach = Math.sqrt(
-        Math.pow(this.boundary.w, 2) + Math.pow(this.boundary.h, 2)
+        Math.pow(this.boundary.w / 2, 2) + Math.pow(this.boundary.h / 2, 2)
       );
       // Distance of query point from center
       const pointDistance = Math.sqrt(

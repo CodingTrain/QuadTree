@@ -36,10 +36,10 @@ describe('Rectangle', () => {
       let w = 25;
       let h = 30;
       rect = new Rectangle(cx, cy, w, h);;
-      left = cx - w;
-      right = cx + w;
-      top = cy - h;
-      bottom = cy + h;
+      left = rect.left;
+      right = rect.right;
+      top = rect.top;
+      bottom = rect.bottom;
     });
     it('returns true when point is in the center', () => {
       let point = new Point(cx, cy);
@@ -109,11 +109,11 @@ describe('Rectangle', () => {
       cy = 200;
       w = 50;
       h = 25;
-      left = cx - w;
-      right = cx + w;
-      top = cy - h;
-      bottom = cy + h;
       base = new Rectangle(cx, cy, w, h);
+      left = base.left;
+      right = base.right ;
+      top = base.top;
+      bottom = base.bottom;
     });
     it('returns true when second rectangle is inside first', () => {
       let test = new Rectangle(cx, cy, w / 2, h / 2);
@@ -128,7 +128,7 @@ describe('Rectangle', () => {
       expect(base.intersects(test)).to.be.true;
     });
     it('returns true when edges line up on the left', () => {
-      let test = new Rectangle(left - 10, cy, 10, 10);
+      let test = new Rectangle(left - 10, cy, 20, 20);
       expect(base.intersects(test)).to.be.true;
     });
     it('returns false when edges do not line up on the left', () => {
@@ -136,7 +136,7 @@ describe('Rectangle', () => {
       expect(base.intersects(test)).not.to.be.true;
     });
     it('returns true when edges line up on the right', () => {
-      let test = new Rectangle(right + 10, cy, 10, 10);
+      let test = new Rectangle(right + 10, cy, 20, 20);
       expect(base.intersects(test)).to.be.true;
     });
     it('returns false when edges do not line up on the right', () => {
@@ -144,7 +144,7 @@ describe('Rectangle', () => {
       expect(base.intersects(test)).not.to.be.true;
     });
     it('returns true when edges line up on the top', () => {
-      let test = new Rectangle(cx, top - 10, 10, 10);
+      let test = new Rectangle(cx, top - 10, 20, 20);
       expect(base.intersects(test)).to.be.true;
     });
     it('returns false when edges do not line up on the top', () => {
@@ -152,7 +152,7 @@ describe('Rectangle', () => {
       expect(base.intersects(test)).not.to.be.true;
     });
     it('returns true when edges line up on the bottom', () => {
-      let test = new Rectangle(cx, bottom + 10, 10, 10);
+      let test = new Rectangle(cx, bottom + 10, 20, 20);
       expect(base.intersects(test)).to.be.true;
     });
     it('returns false when edges do not line up on the bottom', () => {
