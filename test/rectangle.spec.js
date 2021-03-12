@@ -178,4 +178,26 @@ describe('Rectangle', () => {
       expect(rect.bottom).to.equal(210);
     });
   });
+  describe('distane from point', () => {
+    let rect;
+    before(() => {
+      rect = new Rectangle(5, 5, 10, 10);
+    });
+    it('calulates distance to point 1', () => {
+      let point = new Point(0, 0);
+      expect(rect.distanceFrom(point)).to.equal(0);
+    });
+    it('calulates distance to point 2', () => {
+      let point = new Point(5, 5);
+      expect(rect.distanceFrom(point)).to.equal(0);
+    });
+    it('calulates distance to point 3', () => {
+      let point = new Point(13, 14);
+      expect(rect.distanceFrom(point)).to.equal(5);
+    });
+    it('calulates distance to point 4', () => {
+      let point = new Point(13, 5);
+      expect(rect.distanceFrom(point)).to.equal(3);
+    });
+  });
 });

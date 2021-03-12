@@ -12,10 +12,10 @@ class Point {
   }
 
   // Pythagorus: a^2 = b^2 + c^2
-  distanceTo(other) {
+  distanceFrom(other) {
     const dx = other.x - this.x;
     const dy = other.y - this.y;
-    return sqrt(dx * dx + dy * dy);
+    return Math.sqrt(dx * dx + dy * dy);
   }
 }
 
@@ -63,9 +63,9 @@ class Rectangle {
       return 0;
     }
 
-    return min(
-      abs(point.x - this.left),
-      abs(point.x - this.right)
+    return Math.min(
+      Math.abs(point.x - this.left),
+      Math.abs(point.x - this.right)
     );
   }
 
@@ -74,9 +74,9 @@ class Rectangle {
       return 0;
     }
 
-    return min(
-      abs(point.y - this.top),
-      abs(point.y - this.bottom)
+    return Math.min(
+      Math.abs(point.y - this.top),
+      Math.abs(point.y - this.bottom)
     );
   }
 
@@ -84,7 +84,7 @@ class Rectangle {
     const dx = this.xDistanceFrom(point);
     const dy = this.yDistanceFrom(point);
 
-    return sqrt(dx * dx + dy * dy);
+    return Math.sqrt(dx * dx + dy * dy);
   }
 }
 
