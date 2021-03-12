@@ -13,6 +13,7 @@ class Point {
 
   // Pythagorus: a^2 = b^2 + c^2
   distanceFrom(other) {
+    if (!other) return Infinity;
     const dx = other.x - this.x;
     const dy = other.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
@@ -309,6 +310,38 @@ class QuadTree {
     return found;
   }
 
+  kNearestNeighbors(point, count, maxDistance) {
+    var sortedPoints = [...this.points]
+      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
+      .filter((p) => p.distanceFrom(point) <= maxDistance);
+
+    const farthestPoint = sortedPoints[sortedPoints.length - 1];
+    const farthestDistance = point.distanceFrom(farthestPoint);
+
+    if (this.divided) {
+      if (this.northeast.boundary.distanceFrom(point) < farthestDistance &&
+      this.northeast.boundary.distanceFrom(point) < maxDistance) {
+        sortedPoints = sortedPoints.concat(this.northeast.kNearestNeighbors(point, count, maxDistance));
+      }
+      if (this.southeast.boundary.distanceFrom(point) < farthestDistance &&
+      this.southeast.boundary.distanceFrom(point) < maxDistance) {
+        sortedPoints = sortedPoints.concat(this.southeast.kNearestNeighbors(point, count, maxDistance));
+      }
+      if (this.northwest.boundary.distanceFrom(point) < farthestDistance &&
+      this.northwest.boundary.distanceFrom(point) < maxDistance) {
+        sortedPoints = sortedPoints.concat(this.northwest.kNearestNeighbors(point, count, maxDistance));
+      }
+      if (this.southwest.boundary.distanceFrom(point) < farthestDistance &&
+      this.southwest.boundary.distanceFrom(point) < maxDistance) {
+        sortedPoints = sortedPoints.concat(this.southwest.kNearestNeighbors(point, count, maxDistance));
+      }
+    }
+
+    return sortedPoints
+      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
+      .slice(0, count);
+  }
+
   closest(point, count, maxDistance) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
@@ -316,67 +349,11 @@ class QuadTree {
     if (typeof count === "undefined") {
       count = 1;
     }
-
-    // Limit to number of points in this QuadTree
-    if (this.length == 0) {
-      return [];
-    }
-    if (this.length < count) {
-      return this.points;
-    }
-
     if (typeof maxDistance === "undefined") {
-      // A circle as big as the QuadTree's boundary
-      const outerReach = Math.sqrt(
-        Math.pow(this.boundary.w / 2, 2) + Math.pow(this.boundary.h / 2, 2)
-      );
-      // Distance of query point from center
-      const pointDistance = Math.sqrt(
-        Math.pow(point.x, 2) + Math.pow(point.y, 2)
-      );
-      // Together, a circle that encompasses the whole QuadTree
-      maxDistance = outerReach + pointDistance;
-    } else {
-      // Make sure the largest search (maxDistance) contains enough points
-      let maxOuter = new Circle(point.x, point.y, maxDistance);
-      let maxDistanceTest = this.query(maxOuter);
-      if (maxDistanceTest.length < count) {
-        return maxDistanceTest;
-      }
+      maxDistance = Infinity;
     }
 
-    // Binary search with Circle queries
-    let inner = 0;
-    let outer = maxDistance;
-    let limit = 8; // Limit to avoid infinite loops caused by ties
-    let points;
-    while (limit > 0) {
-      const radius = (inner + outer) / 2;
-      const range = new Circle(point.x, point.y, radius);
-      points = this.query(range);
-      if (points.length === count) {
-        return points; // Return when we hit the right size
-      } else if (points.length < count) {
-        // Grow
-        inner = radius;
-      } else {
-        // Shrink
-        outer = radius;
-        limit --;
-      }
-    }
-    // Sort by squared distance
-    points.sort(
-      (a, b) => {
-        const aDist = Math.pow(point.x - a.x, 2) +
-          Math.pow(point.y - a.y, 2);
-        const bDist = Math.pow(point.x - b.x, 2) +
-          Math.pow(point.y - b.y, 2);
-        return aDist - bDist;
-      }
-    );
-    // Slice to return correct count (breaks ties)
-    return points.slice(0, count);
+    return this.kNearestNeighbors(point, count, maxDistance);
   }
 
   forEach(fn) {

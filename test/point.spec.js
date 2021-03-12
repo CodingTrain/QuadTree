@@ -24,4 +24,9 @@ describe('Point', () => {
     let other = new Point(0, 0);
     expect(point.distanceFrom(other)).to.equal(0);
   });
+  it('calculates distance to point 2', () => {
+    let point = new Point(1, 1);
+    let other = new Point(0, 0);
+    expect(point.distanceFrom(other)).to.equal(Math.SQRT2);
+  });
 });
