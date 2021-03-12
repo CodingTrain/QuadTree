@@ -309,7 +309,7 @@ class QuadTree {
     return found;
   }
 
-  kNearestNeighbors(point, count, maxDistance, farthestFound = Infinity) {
+  kNearestNeighbors(point, count = 1, maxDistance = Infinity, farthestFound = Infinity) {
     var sortedPoints = [...this.points]
       .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
       .filter((p) => p.distanceFrom(point) <= maxDistance);
@@ -351,12 +351,6 @@ class QuadTree {
   closest(point, count, maxDistance) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
-    }
-    if (typeof count === "undefined") {
-      count = 1;
-    }
-    if (typeof maxDistance === "undefined") {
-      maxDistance = Infinity;
     }
 
     return this.kNearestNeighbors(point, count, maxDistance);
