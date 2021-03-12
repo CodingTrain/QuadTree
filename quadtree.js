@@ -10,6 +10,13 @@ class Point {
     this.y = y;
     this.userData = data;
   }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceTo(other) {
+    const dx = other.x - this.x;
+    const dy = other.y - this.y;
+    return sqrt(dx * dx + dy * dy);
+  }
 }
 
 class Rectangle {
