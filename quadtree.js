@@ -57,6 +57,35 @@ class Rectangle {
         return new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);
     }
   }
+
+  xDistanceFrom(point) {
+    if (this.left <= point.x && point.x <= this.right) {
+      return 0;
+    }
+
+    return min(
+      abs(point.x - this.left),
+      abs(point.x - this.right)
+    );
+  }
+
+  yDistanceFrom(point) {
+    if (this.top <= point.y && point.y <= this.bottom) {
+      return 0;
+    }
+
+    return min(
+      abs(point.y - this.top),
+      abs(point.y - this.bottom)
+    );
+  }
+
+  distanceFrom(point) {
+    const dx = this.xDistanceFrom(point);
+    const dy = this.yDistanceFrom(point);
+
+    return sqrt(dx * dx + dy * dy);
+  }
 }
 
 // circle class for a circle shaped query
