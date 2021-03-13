@@ -183,19 +183,20 @@ describe('Rectangle', () => {
     before(() => {
       rect = new Rectangle(5, 5, 10, 10);
     });
-    it('calculates distance to point 1', () => {
+    it('calculates distance to point on corner as 0', () => {
       let point = new Point(0, 0);
       expect(rect.distanceFrom(point)).to.equal(0);
     });
-    it('calculates distance to point 2', () => {
+    it('calculates distance to point in centre of rect as 0', () => {
       let point = new Point(5, 5);
       expect(rect.distanceFrom(point)).to.equal(0);
     });
-    it('calculates distance to point 3', () => {
+    it('calculates distance to point using diagonal distance when necessary', () => {
+      // 3, 4, 5 pythagorean triple
       let point = new Point(13, 14);
       expect(rect.distanceFrom(point)).to.equal(5);
     });
-    it('calculates distance to point 4', () => {
+    it('calculates distance to point using direct distance when necessary', () => {
       let point = new Point(13, 5);
       expect(rect.distanceFrom(point)).to.equal(3);
     });
