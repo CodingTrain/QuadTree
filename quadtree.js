@@ -336,6 +336,10 @@ class QuadTree {
     });
 
     this.children.forEach(child => {
+      // if the child quad tree is further away from the point than the furthest point we have found so far
+      // and we have enough points already
+      // then we can skip checking this entire quad tree
+      // as there will be no points in it that we are interested in.
       if (
         (child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
         child.boundary.distanceFrom(point) < maxDistance

@@ -68,7 +68,7 @@ describe('K Nearest Neighbors', () => {
   });
   it('Lots of points', () => {
     const rect = new Rectangle(50, 50, 100, 100);
-    let qt = new QuadTree(rect, 4);
+    let qt = new QuadTree(rect, 100);
 
     for(var i=0; i<10000; ++i) {
       const x = Math.random() * 100;
@@ -82,7 +82,7 @@ describe('K Nearest Neighbors', () => {
   });
   it('Even more points', () => {
     const rect = new Rectangle(500, 500, 1000, 1000);
-    let qt = new QuadTree(rect, 4);
+    let qt = new QuadTree(rect, 100);
 
     for(var i=0; i<100000; ++i) {
       const x = Math.random() * 1000;
