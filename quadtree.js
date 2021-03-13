@@ -327,7 +327,7 @@ class QuadTree {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    var inRangePoints = [...this.points].filter((p) => {
+    var inRangePoints = this.points.filter((p) => {
       const distance = p.distanceFrom(point);
       if (distance <= maxDistance) {
         furthestFound = Math.max(distance, furthestFound);
