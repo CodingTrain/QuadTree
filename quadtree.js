@@ -151,6 +151,19 @@ class QuadTree {
     this.divided = false;
   }
 
+  get children() {
+    if (this.divided) {
+      return [
+        this.northeast,
+        this.northwest,
+        this.southeast,
+        this.southwest
+      ];
+    } else {
+      return [];
+    }
+  }
+
   static create() {
     let DEFAULT_CAPACITY = 8;
     if (arguments.length === 0) {
@@ -309,50 +322,31 @@ class QuadTree {
     return found;
   }
 
-  kNearestNeighbors(point, count = 1, maxDistance = Infinity, farthestFound = Infinity, foundSoFar = 0) {
-    var sortedPoints = [...this.points]
-      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
-      .filter((p) => p.distanceFrom(point) <= maxDistance);
-
-    if (this.divided) {
-      let farthestPoint = sortedPoints[sortedPoints.length - 1];
-
-      let farthestDistance;
-      if (farthestPoint) {
-        farthestDistance = Math.min(point.distanceFrom(farthestPoint), farthestFound);
-      } else {
-        farthestDistance = farthestFound;
-      }
-
-      if ((this.northeast.boundary.distanceFrom(point) < farthestFound || foundSoFar < count) &&
-          this.northeast.boundary.distanceFrom(point) < maxDistance) {
-        sortedPoints = sortedPoints.concat(this.northeast.kNearestNeighbors(point, count, maxDistance, farthestDistance, sortedPoints.length + foundSoFar));
-      }
-      if ((this.southeast.boundary.distanceFrom(point) < farthestFound || foundSoFar < count) &&
-          this.southeast.boundary.distanceFrom(point) < maxDistance) {
-        sortedPoints = sortedPoints.concat(this.southeast.kNearestNeighbors(point, count, maxDistance, farthestDistance, sortedPoints.length + foundSoFar));
-      }
-      if ((this.northwest.boundary.distanceFrom(point) < farthestFound || foundSoFar < count) &&
-          this.northwest.boundary.distanceFrom(point) < maxDistance) {
-        sortedPoints = sortedPoints.concat(this.northwest.kNearestNeighbors(point, count, maxDistance, farthestDistance, sortedPoints.length + foundSoFar));
-      }
-      if ((this.southwest.boundary.distanceFrom(point) < farthestFound || foundSoFar < count) &&
-          this.southwest.boundary.distanceFrom(point) < maxDistance) {
-        sortedPoints = sortedPoints.concat(this.southwest.kNearestNeighbors(point, count, maxDistance, farthestDistance, sortedPoints.length + foundSoFar));
-      }
-    }
-
-    return sortedPoints
-      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
-      .slice(0, count);
-  }
-
-  closest(point, count, maxDistance) {
+  closest(point, count = 1, maxDistance = Infinity, furthestFound = Infinity, foundSoFar = 0) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    return this.kNearestNeighbors(point, count, maxDistance);
+    var inRangePoints = [...this.points].filter((p) => p.distanceFrom(point) <= maxDistance);
+
+    let furthestDistance = 0;
+
+    inRangePoints.forEach(p => {
+        furthestDistance = Math.max(p.distanceFrom(point), furthestDistance);
+    });
+
+    furthestDistance = Math.min(furthestDistance, furthestFound);
+
+    this.children.forEach(child => {
+      if ((child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
+          child.boundary.distanceFrom(point) < maxDistance) {
+        inRangePoints = inRangePoints.concat(child.closest(point, count, maxDistance, furthestDistance, inRangePoints.length + foundSoFar));
+      }
+    });
+
+    return inRangePoints
+      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
+      .slice(0, count);
   }
 
   forEach(fn) {
