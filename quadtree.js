@@ -322,25 +322,25 @@ class QuadTree {
     return found;
   }
 
-  closest(point, count = 1, maxDistance = Infinity, furthestFound = Infinity, foundSoFar = 0) {
+  closest(point, count = 1, maxDistance = Infinity, furthestFound = 0, foundSoFar = 0) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    var inRangePoints = [...this.points].filter((p) => p.distanceFrom(point) <= maxDistance);
-
-    let furthestDistance = 0;
-
-    inRangePoints.forEach(p => {
-        furthestDistance = Math.max(p.distanceFrom(point), furthestDistance);
+    var inRangePoints = [...this.points].filter((p) => {
+      const distance = p.distanceFrom(point);
+      if (distance <= maxDistance) {
+        furthestFound = Math.max(distance, furthestFound);
+      }
+      return distance <= maxDistance
     });
 
-    furthestDistance = Math.min(furthestDistance, furthestFound);
-
     this.children.forEach(child => {
-      if ((child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
-          child.boundary.distanceFrom(point) < maxDistance) {
-        inRangePoints = inRangePoints.concat(child.closest(point, count, maxDistance, furthestDistance, inRangePoints.length + foundSoFar));
+      if (
+        (child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
+        child.boundary.distanceFrom(point) < maxDistance
+      ) {
+        inRangePoints = inRangePoints.concat(child.closest(point, count, maxDistance, furthestFound, inRangePoints.length + foundSoFar));
       }
     });
 
