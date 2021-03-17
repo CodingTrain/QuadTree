@@ -14,4 +14,19 @@ describe('Point', () => {
     let point = new Point(12,23, 'myData');
     expect(point.userData).to.equal('myData');
   });
+  it('calculates distance to point', () => {
+    let point = new Point(0, 0);
+    let other = new Point(3, 4);
+    expect(point.distanceFrom(other)).to.equal(5);
+  });
+  it('calculates distance to same point as 0', () => {
+    let point = new Point(0, 0);
+    let other = new Point(0, 0);
+    expect(point.distanceFrom(other)).to.equal(0);
+  });
+  it('calculates distance to point 2', () => {
+    let point = new Point(1, 1);
+    let other = new Point(0, 0);
+    expect(point.distanceFrom(other)).to.equal(Math.SQRT2);
+  });
 });

@@ -10,6 +10,13 @@ class Point {
     this.y = y;
     this.userData = data;
   }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceFrom(other) {
+    const dx = other.x - this.x;
+    const dy = other.y - this.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
 }
 
 class Rectangle {
@@ -49,6 +56,35 @@ class Rectangle {
       case 'sw':
         return new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);
     }
+  }
+
+  xDistanceFrom(point) {
+    if (this.left <= point.x && point.x <= this.right) {
+      return 0;
+    }
+
+    return Math.min(
+      Math.abs(point.x - this.left),
+      Math.abs(point.x - this.right)
+    );
+  }
+
+  yDistanceFrom(point) {
+    if (this.top <= point.y && point.y <= this.bottom) {
+      return 0;
+    }
+
+    return Math.min(
+      Math.abs(point.y - this.top),
+      Math.abs(point.y - this.bottom)
+    );
+  }
+
+  distanceFrom(point) {
+    const dx = this.xDistanceFrom(point);
+    const dy = this.yDistanceFrom(point);
+
+    return Math.sqrt(dx * dx + dy * dy);
   }
 }
 
@@ -113,6 +149,19 @@ class QuadTree {
     this.capacity = capacity;
     this.points = [];
     this.divided = false;
+  }
+
+  get children() {
+    if (this.divided) {
+      return [
+        this.northeast,
+        this.northwest,
+        this.southeast,
+        this.southwest
+      ];
+    } else {
+      return [];
+    }
   }
 
   static create() {
@@ -273,74 +322,35 @@ class QuadTree {
     return found;
   }
 
-  closest(point, count, maxDistance) {
+  closest(point, count = 1, maxDistance = Infinity, furthestFound = 0, foundSoFar = 0) {
     if (typeof point === "undefined") {
       throw TypeError("Method 'closest' needs a point");
     }
-    if (typeof count === "undefined") {
-      count = 1;
-    }
 
-    // Limit to number of points in this QuadTree
-    if (this.length == 0) {
-      return [];
-    }
-    if (this.length < count) {
-      return this.points;
-    }
+    var inRangePoints = this.points.filter((p) => {
+      const distance = p.distanceFrom(point);
+      if (distance <= maxDistance) {
+        furthestFound = Math.max(distance, furthestFound);
+      }
+      return distance <= maxDistance
+    });
 
-    if (typeof maxDistance === "undefined") {
-      // A circle as big as the QuadTree's boundary
-      const outerReach = Math.sqrt(
-        Math.pow(this.boundary.w / 2, 2) + Math.pow(this.boundary.h / 2, 2)
-      );
-      // Distance of query point from center
-      const pointDistance = Math.sqrt(
-        Math.pow(point.x, 2) + Math.pow(point.y, 2)
-      );
-      // Together, a circle that encompasses the whole QuadTree
-      maxDistance = outerReach + pointDistance;
-    } else {
-      // Make sure the largest search (maxDistance) contains enough points
-      let maxOuter = new Circle(point.x, point.y, maxDistance);
-      let maxDistanceTest = this.query(maxOuter);
-      if (maxDistanceTest.length < count) {
-        return maxDistanceTest;
+    this.children.forEach(child => {
+      // if the child quad tree is further away from the point than the furthest point we have found so far
+      // and we have enough points already
+      // then we can skip checking this entire quad tree
+      // as there will be no points in it that we are interested in.
+      if (
+        (child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
+        child.boundary.distanceFrom(point) < maxDistance
+      ) {
+        inRangePoints = inRangePoints.concat(child.closest(point, count, maxDistance, furthestFound, inRangePoints.length + foundSoFar));
       }
-    }
+    });
 
-    // Binary search with Circle queries
-    let inner = 0;
-    let outer = maxDistance;
-    let limit = 8; // Limit to avoid infinite loops caused by ties
-    let points;
-    while (limit > 0) {
-      const radius = (inner + outer) / 2;
-      const range = new Circle(point.x, point.y, radius);
-      points = this.query(range);
-      if (points.length === count) {
-        return points; // Return when we hit the right size
-      } else if (points.length < count) {
-        // Grow
-        inner = radius;
-      } else {
-        // Shrink
-        outer = radius;
-        limit --;
-      }
-    }
-    // Sort by squared distance
-    points.sort(
-      (a, b) => {
-        const aDist = Math.pow(point.x - a.x, 2) +
-          Math.pow(point.y - a.y, 2);
-        const bDist = Math.pow(point.x - b.x, 2) +
-          Math.pow(point.y - b.y, 2);
-        return aDist - bDist;
-      }
-    );
-    // Slice to return correct count (breaks ties)
-    return points.slice(0, count);
+    return inRangePoints
+      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
+      .slice(0, count);
   }
 
   forEach(fn) {
