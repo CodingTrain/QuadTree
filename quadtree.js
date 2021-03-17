@@ -343,8 +343,7 @@ class QuadTree {
       const distance = child.boundary.distanceFrom(searchPoint);
       if (distance > maxDistance) return;
       if (foundSoFar < maxCount || distance < furthestDistance) {
-        const childPoints = child.closest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
-        found = found.concat(childPoints);
+        found = found.concat(child.closest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar));
       }
     });
 
