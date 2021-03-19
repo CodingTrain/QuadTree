@@ -61,31 +61,38 @@ function kNearest(tree, searchPoint, maxCount = 1, maxDistance = Infinity, furth
 
     let found = [];
 
-    tree.points.forEach((p) => {
-        const distance = p.distanceFrom(searchPoint);
-        p.userData.searched = true;
-        if (distance > maxDistance) {
-            return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
-            found.push(p);
-            furthestDistance = max(distance, furthestDistance);
-            foundSoFar++;
-        }
-    });
+    tree.children.sort((a, b) => a.boundary.distanceFrom(searchPoint) - b.boundary.distanceFrom(searchPoint))
+        .forEach((child) => {
+            const distance = child.boundary.distanceFrom(searchPoint);
+            if (distance > maxDistance) {
+                return;
+            } else if (foundSoFar < maxCount || distance < furthestDistance) {
+                const result = kNearest(child, searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
+                searchedQuads.push(child.boundary);
+                const childPoints = result.found;
+                found = found.concat(childPoints);
+                foundSoFar += childPoints.length;
+                furthestDistance = result.furthestDistance;
+            }
+        });
 
-    tree.children.forEach((child) => {
-        const distance = child.boundary.distanceFrom(searchPoint);
-        if (distance > maxDistance) {
-            return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
-            const childPoints = kNearest(child, searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
-            searchedQuads.push(child.boundary);
-            found = found.concat(childPoints);
-        }
-    });
+    tree.points.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
+        .forEach((p) => {
+            const distance = p.distanceFrom(searchPoint);
+            p.userData.searched = true;
+            if (distance > maxDistance) {
+                return;
+            } else if (foundSoFar < maxCount || distance < furthestDistance) {
+                found.push(p);
+                furthestDistance = max(distance, furthestDistance);
+                foundSoFar++;
+            }
+        });
 
-    return found.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
-        .slice(0, maxCount);
+    return {
+        found: found.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint)).slice(0, maxCount),
+        furthestDistance
+    };
 }
 
 function mousePressed() {
@@ -97,7 +104,7 @@ function mousePressed() {
         };
     });
     let mp = new Point(mouseX, mouseY);
-    let closest = kNearest(qtree, mp);
+    let closest = kNearest(qtree, mp).found;
     closest.forEach((p) => {
         p.userData.closest = true;
     });
