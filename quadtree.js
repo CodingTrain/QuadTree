@@ -347,7 +347,7 @@ class QuadTree {
         }
       });
 
-    this.points
+    this.points.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
       .forEach((p) => {
         const distance = p.distanceFrom(searchPoint);
         if (distance > maxDistance) {
