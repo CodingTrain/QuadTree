@@ -322,35 +322,47 @@ class QuadTree {
     return found;
   }
 
-  closest(point, count = 1, maxDistance = Infinity, furthestFound = 0, foundSoFar = 0) {
-    if (typeof point === "undefined") {
+  closest(searchPoint, maxCount = 1, maxDistance = Infinity) {
+    if (typeof searchPoint === "undefined") {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    var inRangePoints = this.points.filter((p) => {
-      const distance = p.distanceFrom(point);
-      if (distance <= maxDistance) {
-        furthestFound = Math.max(distance, furthestFound);
-      }
-      return distance <= maxDistance
-    });
+    return this.kNearest(searchPoint, maxCount, maxDistance, 0, 0).found;
+  }
 
-    this.children.forEach(child => {
-      // if the child quad tree is further away from the point than the furthest point we have found so far
-      // and we have enough points already
-      // then we can skip checking this entire quad tree
-      // as there will be no points in it that we are interested in.
-      if (
-        (child.boundary.distanceFrom(point) < furthestFound || foundSoFar < count) &&
-        child.boundary.distanceFrom(point) < maxDistance
-      ) {
-        inRangePoints = inRangePoints.concat(child.closest(point, count, maxDistance, furthestFound, inRangePoints.length + foundSoFar));
-      }
-    });
+  kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar) {
+    let found = [];
 
-    return inRangePoints
-      .sort((a, b) => a.distanceFrom(point) - b.distanceFrom(point))
-      .slice(0, count);
+    this.children.sort((a, b) => a.boundary.distanceFrom(searchPoint) - b.boundary.distanceFrom(searchPoint))
+      .forEach((child) => {
+        const distance = child.boundary.distanceFrom(searchPoint);
+        if (distance > maxDistance) {
+          return;
+        } else if (foundSoFar < maxCount || distance < furthestDistance) {
+          const result = child.kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
+          const childPoints = result.found;
+          found = found.concat(childPoints);
+          foundSoFar += childPoints.length;
+          furthestDistance = result.furthestDistance;
+        }
+      });
+
+    this.points.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
+      .forEach((p) => {
+        const distance = p.distanceFrom(searchPoint);
+        if (distance > maxDistance) {
+          return;
+        } else if (foundSoFar < maxCount || distance < furthestDistance) {
+          found.push(p);
+          furthestDistance = Math.max(distance, furthestDistance);
+          foundSoFar++;
+        }
+      });
+
+    return {
+      found: found.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint)).slice(0, maxCount),
+      furthestDistance
+    };
   }
 
   forEach(fn) {
