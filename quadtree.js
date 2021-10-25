@@ -375,7 +375,8 @@ class QuadTree {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    return this.kNearest(searchPoint, maxCount, maxDistance ** 2, 0, 0).found;
+    const sqMaxDistance = maxDistance ** 2;
+    return this.kNearest(searchPoint, maxCount, sqMaxDistance, 0, 0).found;
   }
 
   kNearest(searchPoint, maxCount, sqMaxDistance, furthestSqDistance, foundSoFar) {
