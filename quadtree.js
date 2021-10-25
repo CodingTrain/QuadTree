@@ -144,7 +144,10 @@ class Circle {
 }
 
 class QuadTree {
-  constructor(boundary, capacity, maxDepth = 16, depth = 0) {
+  DEFAULT_CAPACITY = 8;
+  MAX_DEPTH = 8;
+
+  constructor(boundary, capacity = this.DEFAULT_CAPACITY, _depth = 0) {
     if (!boundary) {
       throw TypeError('boundary is null or undefined');
     }
@@ -163,8 +166,7 @@ class QuadTree {
     this.points = [];
     this.divided = false;
 
-    this.maxDepth = maxDepth;
-    this.depth = depth;
+    this.depth = _depth;
   }
 
   get children() {
@@ -181,7 +183,6 @@ class QuadTree {
   }
 
   static create() {
-    let DEFAULT_CAPACITY = 8;
     if (arguments.length === 0) {
       if (typeof width === "undefined") {
         throw new TypeError("No global width defined");
@@ -190,17 +191,17 @@ class QuadTree {
         throw new TypeError("No global height defined");
       }
       let bounds = new Rectangle(width / 2, height / 2, width, height);
-      return new QuadTree(bounds, DEFAULT_CAPACITY);
+      return new QuadTree(bounds, this.DEFAULT_CAPACITY);
     }
     if (arguments[0] instanceof Rectangle) {
-      let capacity = arguments[1] || DEFAULT_CAPACITY;
+      let capacity = arguments[1] || this.DEFAULT_CAPACITY;
       return new QuadTree(arguments[0], capacity);
     }
     if (typeof arguments[0] === "number" &&
         typeof arguments[1] === "number" &&
         typeof arguments[2] === "number" &&
         typeof arguments[3] === "number") {
-      let capacity = arguments[4] || DEFAULT_CAPACITY;
+      let capacity = arguments[4] || this.DEFAULT_CAPACITY;
       return new QuadTree(new Rectangle(arguments[0], arguments[1], arguments[2], arguments[3]), capacity);
     }
     throw new TypeError('Invalid parameters');
@@ -228,7 +229,6 @@ class QuadTree {
 
     if (this.depth === 0) {
       obj.capacity = this.capacity;
-      obj.maxDepth = this.maxDepth;
       obj.x = this.boundary.x;
       obj.y = this.boundary.y;
       obj.w = this.boundary.w;
@@ -238,7 +238,7 @@ class QuadTree {
     return obj;
   }
 
-  static fromJSON(obj, x, y, w, h, capacity, maxDepth, depth) {
+  static fromJSON(obj, x, y, w, h, capacity, depth) {
     if (typeof x === "undefined") {
       if ("x" in obj) {
         x = obj.x;
@@ -246,14 +246,13 @@ class QuadTree {
         w = obj.w;
         h = obj.h;
         capacity = obj.capacity;
-        maxDepth = obj.maxDepth;
         depth = 0;
       } else {
         throw TypeError("JSON missing boundary information");
       }
     }
 
-    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity, maxDepth, depth);
+    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity, depth);
 
     qt.points = obj.points ?? null;
     qt.divided = qt.points === null; // points are set to null on subdivide
@@ -269,27 +268,25 @@ class QuadTree {
       const w = qt.boundary.w / 2;
       const h = qt.boundary.h / 2;
 
-      const staticArgs = [capacity, maxDepth, depth + 1];
-
       if ("ne" in obj) {
-        qt.northeast = QuadTree.fromJSON(obj.ne, x + w/2, y - h/2, w, h, ...staticArgs);
+        qt.northeast = QuadTree.fromJSON(obj.ne, x + w/2, y - h/2, w, h, capacity, depth + 1);
       } else {
-        qt.northeast = new QuadTree(qt.boundary.subdivide('ne'), ...staticArgs);
+        qt.northeast = new QuadTree(qt.boundary.subdivide('ne'), capacity, depth + 1);
       }
       if ("nw" in obj) {
-        qt.northwest = QuadTree.fromJSON(obj.nw, x - w/2, y - h/2, w, h, ...staticArgs);
+        qt.northwest = QuadTree.fromJSON(obj.nw, x - w/2, y - h/2, w, h, capacity, depth + 1);
       } else {
-        qt.northwest = new QuadTree(qt.boundary.subdivide('nw'), ...staticArgs);
+        qt.northwest = new QuadTree(qt.boundary.subdivide('nw'), capacity, depth + 1);
       }
       if ("se" in obj) {
-        qt.southeast = QuadTree.fromJSON(obj.se, x + w/2, y + h/2, w, h, ...staticArgs);
+        qt.southeast = QuadTree.fromJSON(obj.se, x + w/2, y + h/2, w, h, capacity, depth + 1);
       } else {
-        qt.southeast = new QuadTree(qt.boundary.subdivide('se'), ...staticArgs);
+        qt.southeast = new QuadTree(qt.boundary.subdivide('se'), capacity, depth + 1);
       }
       if ("sw" in obj) {
-        qt.southwest = QuadTree.fromJSON(obj.sw, x - w/2, y + h/2, w, h, ...staticArgs);
+        qt.southwest = QuadTree.fromJSON(obj.sw, x - w/2, y + h/2, w, h, capacity, depth + 1);
       } else {
-        qt.southwest = new QuadTree(qt.boundary.subdivide('sw'), ...staticArgs);
+        qt.southwest = new QuadTree(qt.boundary.subdivide('sw'), capacity, depth + 1);
       }
     }
 
@@ -297,12 +294,10 @@ class QuadTree {
   }
 
   subdivide() {
-    const staticArgs = [this.capacity, this.maxDepth, this.depth + 1];
-
-    this.northeast = new QuadTree(this.boundary.subdivide('ne'), ...staticArgs);
-    this.northwest = new QuadTree(this.boundary.subdivide('nw'), ...staticArgs);
-    this.southeast = new QuadTree(this.boundary.subdivide('se'), ...staticArgs);
-    this.southwest = new QuadTree(this.boundary.subdivide('sw'), ...staticArgs);
+    this.northeast = new QuadTree(this.boundary.subdivide('ne'), this.capacity, this.depth + 1);
+    this.northwest = new QuadTree(this.boundary.subdivide('nw'), this.capacity, this.depth + 1);
+    this.southeast = new QuadTree(this.boundary.subdivide('se'), this.capacity, this.depth + 1);
+    this.southwest = new QuadTree(this.boundary.subdivide('sw'), this.capacity, this.depth + 1);
 
     this.divided = true;
 
@@ -310,7 +305,8 @@ class QuadTree {
     // This improves performance by placing points
     // in the smallest available rectangle.
     for (const p of this.points) {
-      const inserted = this.northeast.insert(p) ||
+      const inserted =
+        this.northeast.insert(p) ||
         this.northwest.insert(p) ||
         this.southeast.insert(p) ||
         this.southwest.insert(p);
@@ -331,7 +327,7 @@ class QuadTree {
     if (!this.divided) {
       if (
         this.points.length < this.capacity ||
-        this.depth === this.maxDepth
+        this.depth === this.MAX_DEPTH
       ) {
         this.points.push(point);
         return true;
