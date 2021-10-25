@@ -356,11 +356,7 @@ class QuadTree {
     }
 
     // Delete points with range
-    for(let i = this.points.length; --i;) {
-      if (range.contains(this.points[i])) {
-        this.points.splice(i, 1);
-      }
-    }
+    this.points = this.points.filter(point => !range.contains(point));
   }
 
   closest(searchPoint, maxCount = 1, maxDistance = Infinity) {
