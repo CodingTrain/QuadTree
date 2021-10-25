@@ -357,8 +357,7 @@ class QuadTree {
 
     // Delete points with range
     for(let i = this.points.length; --i;) {
-      var p = this.points[i];
-      if (range.contains(p)) {
+      if (range.contains(this.points[i])) {
         this.points.splice(i, 1);
       }
     }
