@@ -51,7 +51,7 @@ function show(qtree, range) {
   if (range.intersects(qtree.boundary)) {
     stroke(255);
   }
-  rect(qtree.boundary.x, qtree.boundary.y, qtree.boundary.w * 2, qtree.boundary.h * 2);
+  rect(qtree.boundary.x, qtree.boundary.y, qtree.boundary.w, qtree.boundary.h);
 
   stroke(255);
   strokeWeight(2);

@@ -36,8 +36,7 @@ function setup() {
 }
 
 function draw() {
-  let boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
-  qtree = new QuadTree(boundary, 4);
+  qtree = QuadTree.create();
 
   background(0);
   fill(255);

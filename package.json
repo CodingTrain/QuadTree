@@ -29,9 +29,8 @@
   "homepage": "https://github.com/CodingTrain/QuadTree#readme",
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^5.0.5",
+    "mocha": "^9.1.3",
     "nyc": "^15.0.0",
     "sinon": "^4.4.9"
-  },
-  "dependencies": {}
+  }
 }

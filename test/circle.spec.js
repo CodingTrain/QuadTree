@@ -45,7 +45,7 @@ describe('Circle', () => {
     });
   });
   describe('intersects', () => {
-    let circle; 
+    let circle;
     let cx = 100;
     let cy = 50;
     let r = 25;
