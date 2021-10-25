@@ -339,23 +339,24 @@ class QuadTree {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    return this.kNearest(searchPoint, maxCount, maxDistance ** 2, 0, 0).found;
+    const sqMaxDistance = maxDistance ** 2;
+    return this.kNearest(searchPoint, maxCount, sqMaxDistance, 0, 0).found;
   }
 
-  kNearest(searchPoint, maxCount, sqMaxDist, furthestSqDist, foundSoFar) {
+  kNearest(searchPoint, maxCount, sqMaxDistance, furthestSqDistance, foundSoFar) {
     let found = [];
 
     this.children.sort((a, b) => a.boundary.sqDistanceFrom(searchPoint) - b.boundary.sqDistanceFrom(searchPoint))
       .forEach((child) => {
         const sqDist = child.boundary.sqDistanceFrom(searchPoint);
-        if (sqDist > sqMaxDist) {
+        if (sqDist > sqMaxDistance) {
           return;
-        } else if (foundSoFar < maxCount || sqDist < furthestSqDist) {
-          const result = child.kNearest(searchPoint, maxCount, sqMaxDist, furthestSqDist, foundSoFar);
+        } else if (foundSoFar < maxCount || sqDist < furthestSqDistance) {
+          const result = child.kNearest(searchPoint, maxCount, sqMaxDistance, furthestSqDistance, foundSoFar);
           const childPoints = result.found;
           found = found.concat(childPoints);
           foundSoFar += childPoints.length;
-          furthestSqDist = result.furthestSqDist;
+          furthestSqDistance = result.furthestSqDistance;
         }
       });
 
@@ -363,18 +364,18 @@ class QuadTree {
       .sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint))
       .forEach((p) => {
         const sqDist = p.sqDistanceFrom(searchPoint);
-        if (sqDist > sqMaxDist) {
+        if (sqDist > sqMaxDistance) {
           return;
-        } else if (foundSoFar < maxCount || sqDist < furthestSqDist) {
+        } else if (foundSoFar < maxCount || sqDist < furthestSqDistance) {
           found.push(p);
-          furthestSqDist = Math.max(sqDist, furthestSqDist);
+          furthestSqDistance = Math.max(sqDist, furthestSqDistance);
           foundSoFar++;
         }
       });
 
     return {
       found: found.sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint)).slice(0, maxCount),
-      furthestDistance: furthestSqDist ** 2,
+      furthestDistance: Math.sqrt(furthestSqDistance),
     };
   }
 
