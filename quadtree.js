@@ -11,11 +11,17 @@ class Point {
     this.userData = data;
   }
 
-  // Pythagorus: a^2 = b^2 + c^2
-  distanceFrom(other) {
+  // Skips Math.sqrt for faster performance
+  sqDistanceFrom(other) {
     const dx = other.x - this.x;
     const dy = other.y - this.y;
-    return Math.sqrt(dx * dx + dy * dy);
+
+    return dx * dx + dy * dy;
+  }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceFrom(other) {
+    return Math.sqrt(this.sqDistanceFrom(other));
   }
 }
 
@@ -80,11 +86,17 @@ class Rectangle {
     );
   }
 
-  distanceFrom(point) {
+  // Skips Math.sqrt for faster performance
+  sqDistanceFrom(point) {
     const dx = this.xDistanceFrom(point);
     const dy = this.yDistanceFrom(point);
 
-    return Math.sqrt(dx * dx + dy * dy);
+    return dx * dx + dy * dy;
+  }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceFrom(point) {
+    return Math.sqrt(this.sqDistanceFrom(point));
   }
 }
 
@@ -132,7 +144,7 @@ class Circle {
 }
 
 class QuadTree {
-  constructor(boundary, capacity) {
+  constructor(boundary, capacity, maxDepth = 16, depth = 0) {
     if (!boundary) {
       throw TypeError('boundary is null or undefined');
     }
@@ -145,10 +157,14 @@ class QuadTree {
     if (capacity < 1) {
       throw RangeError('capacity must be greater than 0');
     }
+
     this.boundary = boundary;
     this.capacity = capacity;
     this.points = [];
     this.divided = false;
+
+    this.maxDepth = maxDepth;
+    this.depth = depth;
   }
 
   get children() {
@@ -190,33 +206,39 @@ class QuadTree {
     throw new TypeError('Invalid parameters');
   }
 
-  toJSON(isChild) {
-    let obj = { points: this.points };
+  toJSON() {
+    let obj = {};
+
     if (this.divided) {
-      if (this.northeast.points.length > 0) {
-        obj.ne = this.northeast.toJSON(true);
+      if (this.northeast.divided || this.northeast.points.length > 0) {
+        obj.ne = this.northeast.toJSON();
       }
-      if (this.northwest.points.length > 0) {
-        obj.nw = this.northwest.toJSON(true);
+      if (this.northwest.divided || this.northwest.points.length > 0) {
+        obj.nw = this.northwest.toJSON();
       }
-      if (this.southeast.points.length > 0) {
-        obj.se = this.southeast.toJSON(true);
+      if (this.southeast.divided || this.southeast.points.length > 0) {
+        obj.se = this.southeast.toJSON();
       }
-      if (this.southwest.points.length > 0) {
-        obj.sw = this.southwest.toJSON(true);
+      if (this.southwest.divided || this.southwest.points.length > 0) {
+        obj.sw = this.southwest.toJSON();
       }
+    } else {
+       obj.points = this.points;
     }
-    if (!isChild) {
+
+    if (this.depth === 0) {
       obj.capacity = this.capacity;
+      obj.maxDepth = this.maxDepth;
       obj.x = this.boundary.x;
       obj.y = this.boundary.y;
       obj.w = this.boundary.w;
       obj.h = this.boundary.h;
     }
+
     return obj;
   }
 
-  static fromJSON(obj, x, y, w, h, capacity) {
+  static fromJSON(obj, x, y, w, h, capacity, maxDepth, depth) {
     if (typeof x === "undefined") {
       if ("x" in obj) {
         x = obj.x;
@@ -224,56 +246,81 @@ class QuadTree {
         w = obj.w;
         h = obj.h;
         capacity = obj.capacity;
+        maxDepth = obj.maxDepth;
+        depth = 0;
       } else {
         throw TypeError("JSON missing boundary information");
       }
     }
-    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity);
-    qt.points = obj.points;
+
+    let qt = new QuadTree(new Rectangle(x, y, w, h), capacity, maxDepth, depth);
+
+    qt.points = obj.points ?? null;
+    qt.divided = qt.points === null; // points are set to null on subdivide
+
     if (
       "ne" in obj ||
       "nw" in obj ||
       "se" in obj ||
       "sw" in obj
     ) {
-      let x = qt.boundary.x;
-      let y = qt.boundary.y;
-      let w = qt.boundary.w / 2;
-      let h = qt.boundary.h / 2;
+      const x = qt.boundary.x;
+      const y = qt.boundary.y;
+      const w = qt.boundary.w / 2;
+      const h = qt.boundary.h / 2;
+
+      const staticArgs = [capacity, maxDepth, depth + 1];
 
       if ("ne" in obj) {
-        qt.northeast = QuadTree.fromJSON(obj.ne, x + w/2, y - h/2, w, h, capacity);
+        qt.northeast = QuadTree.fromJSON(obj.ne, x + w/2, y - h/2, w, h, ...staticArgs);
       } else {
-        qt.northeast = new QuadTree(qt.boundary.subdivide('ne'), capacity);
+        qt.northeast = new QuadTree(qt.boundary.subdivide('ne'), ...staticArgs);
       }
       if ("nw" in obj) {
-        qt.northwest = QuadTree.fromJSON(obj.nw, x - w/2, y - h/2, w, h, capacity);
+        qt.northwest = QuadTree.fromJSON(obj.nw, x - w/2, y - h/2, w, h, ...staticArgs);
       } else {
-        qt.northwest = new QuadTree(qt.boundary.subdivide('nw'), capacity);
+        qt.northwest = new QuadTree(qt.boundary.subdivide('nw'), ...staticArgs);
       }
       if ("se" in obj) {
-        qt.southeast = QuadTree.fromJSON(obj.se, x + w/2, y + h/2, w, h, capacity);
+        qt.southeast = QuadTree.fromJSON(obj.se, x + w/2, y + h/2, w, h, ...staticArgs);
       } else {
-        qt.southeast = new QuadTree(qt.boundary.subdivide('se'), capacity);
+        qt.southeast = new QuadTree(qt.boundary.subdivide('se'), ...staticArgs);
       }
       if ("sw" in obj) {
-        qt.southwest = QuadTree.fromJSON(obj.sw, x - w/2, y + h/2, w, h, capacity);
+        qt.southwest = QuadTree.fromJSON(obj.sw, x - w/2, y + h/2, w, h, ...staticArgs);
       } else {
-        qt.southwest = new QuadTree(qt.boundary.subdivide('sw'), capacity);
+        qt.southwest = new QuadTree(qt.boundary.subdivide('sw'), ...staticArgs);
       }
-
-      qt.divided = true;
     }
+
     return qt;
   }
 
   subdivide() {
-    this.northeast = new QuadTree(this.boundary.subdivide('ne'), this.capacity);
-    this.northwest = new QuadTree(this.boundary.subdivide('nw'), this.capacity);
-    this.southeast = new QuadTree(this.boundary.subdivide('se'), this.capacity);
-    this.southwest = new QuadTree(this.boundary.subdivide('sw'), this.capacity);
+    const staticArgs = [this.capacity, this.maxDepth, this.depth + 1];
+
+    this.northeast = new QuadTree(this.boundary.subdivide('ne'), ...staticArgs);
+    this.northwest = new QuadTree(this.boundary.subdivide('nw'), ...staticArgs);
+    this.southeast = new QuadTree(this.boundary.subdivide('se'), ...staticArgs);
+    this.southwest = new QuadTree(this.boundary.subdivide('sw'), ...staticArgs);
 
     this.divided = true;
+
+    // Move points to children.
+    // This improves performance by placing points
+    // in the smallest available rectangle.
+    for (const p of this.points) {
+      const inserted = this.northeast.insert(p) ||
+        this.northwest.insert(p) ||
+        this.southeast.insert(p) ||
+        this.southwest.insert(p);
+
+      if (!inserted) {
+        throw RangeError('capacity must be greater than 0');
+      }
+    }
+
+    this.points = null;
   }
 
   insert(point) {
@@ -281,12 +328,15 @@ class QuadTree {
       return false;
     }
 
-    if (this.points.length < this.capacity) {
-      this.points.push(point);
-      return true;
-    }
-
     if (!this.divided) {
+      if (
+        this.points.length < this.capacity ||
+        this.depth === this.maxDepth
+      ) {
+        this.points.push(point);
+        return true;
+      }
+
       this.subdivide();
     }
 
@@ -307,16 +357,18 @@ class QuadTree {
       return found;
     }
 
-    for (let p of this.points) {
-      if (range.contains(p)) {
-        found.push(p);
-      }
-    }
     if (this.divided) {
       this.northwest.query(range, found);
       this.northeast.query(range, found);
       this.southwest.query(range, found);
       this.southeast.query(range, found);
+      return found;
+    }
+
+    for (const p of this.points) {
+      if (range.contains(p)) {
+        found.push(p);
+      }
     }
 
     return found;
@@ -332,46 +384,52 @@ class QuadTree {
 
   kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar) {
     let found = [];
+    const sqMaxDistance = maxDistance ** 2;
 
-    this.children.sort((a, b) => a.boundary.distanceFrom(searchPoint) - b.boundary.distanceFrom(searchPoint))
-      .forEach((child) => {
-        const distance = child.boundary.distanceFrom(searchPoint);
-        if (distance > maxDistance) {
-          return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
-          const result = child.kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
-          const childPoints = result.found;
-          found = found.concat(childPoints);
-          foundSoFar += childPoints.length;
-          furthestDistance = result.furthestDistance;
-        }
-      });
-
-    this.points.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
-      .forEach((p) => {
-        const distance = p.distanceFrom(searchPoint);
-        if (distance > maxDistance) {
-          return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
-          found.push(p);
-          furthestDistance = Math.max(distance, furthestDistance);
-          foundSoFar++;
-        }
-      });
+    if (this.divided) {
+      this.children
+        .sort((a, b) => a.boundary.sqDistanceFrom(searchPoint) - b.boundary.sqDistanceFrom(searchPoint))
+        .forEach((child) => {
+          const sqDistance = child.boundary.sqDistanceFrom(searchPoint);
+          if (sqDistance > sqMaxDistance) {
+            return;
+          } else if (foundSoFar < maxCount || sqDistance < furthestDistance) {
+            const result = child.kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
+            const childPoints = result.found;
+            found = found.concat(childPoints);
+            foundSoFar += childPoints.length;
+            furthestDistance = result.furthestDistance;
+          }
+        });
+    } else {
+      this.points
+        .sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint))
+        .forEach((p) => {
+          const sqDistance = p.sqDistanceFrom(searchPoint);
+          if (sqDistance > sqMaxDistance) {
+            return;
+          } else if (foundSoFar < maxCount || sqDistance < furthestDistance) {
+            found.push(p);
+            furthestDistance = Math.max(sqDistance, furthestDistance);
+            foundSoFar++;
+          }
+        });
+    }
 
     return {
-      found: found.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint)).slice(0, maxCount),
-      furthestDistance
+      found: found.sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint)).slice(0, maxCount),
+      furthestDistance: Math.sqrt(furthestDistance),
     };
   }
 
   forEach(fn) {
-    this.points.forEach(fn);
     if (this.divided) {
       this.northeast.forEach(fn);
       this.northwest.forEach(fn);
       this.southeast.forEach(fn);
       this.southwest.forEach(fn);
+    } else {
+      this.points.forEach(fn);
     }
   }
 
@@ -393,14 +451,16 @@ class QuadTree {
   }
 
   get length() {
-    let count = this.points.length;
     if (this.divided) {
-      count += this.northwest.length;
-      count += this.northeast.length;
-      count += this.southwest.length;
-      count += this.southeast.length;
+      return (
+        this.northwest.length +
+        this.northeast.length +
+        this.southwest.length +
+        this.southeast.length
+      );
     }
-    return count;
+
+    return this.points.length;
   }
 }
 
