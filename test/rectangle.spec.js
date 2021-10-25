@@ -127,6 +127,15 @@ describe('Rectangle', () => {
       let test = new Rectangle(cx, cy, w * 2, h * 2);
       expect(base.intersects(test)).to.be.true;
     });
+
+    it('returns true when base rect overlaps test rect only on left edge', () => {
+      let test = new Rectangle(left + 10, top - 10, w, h + 20);
+      expect(base.intersects(test)).to.be.true;
+    });
+    it('returns true when test rect overlaps base rect only on left edge', () => {
+      let test = new Rectangle(left - 10, top + 10, w, h - 20);
+      expect(base.intersects(test)).to.be.true;
+    });
     it('returns true when edges line up on the left', () => {
       let test = new Rectangle(left - 10, cy, 20, 20);
       expect(base.intersects(test)).to.be.true;
@@ -134,6 +143,15 @@ describe('Rectangle', () => {
     it('returns false when edges do not line up on the left', () => {
       let test = new Rectangle(left - 10 - 1, cy, 10, 10);
       expect(base.intersects(test)).not.to.be.true;
+    });
+
+    it('returns true when base rect overlaps test rect only on right edge', () => {
+      let test = new Rectangle(left - 10, top - 10, w, h + 20);
+      expect(base.intersects(test)).to.be.true;
+    });
+    it('returns true when test rect overlaps base rect only on right edge', () => {
+      let test = new Rectangle(left + 10, top + 10, w, h - 20);
+      expect(base.intersects(test)).to.be.true;
     });
     it('returns true when edges line up on the right', () => {
       let test = new Rectangle(right + 10, cy, 20, 20);
@@ -143,6 +161,15 @@ describe('Rectangle', () => {
       let test = new Rectangle(right + 10 + 1, cy, 10, 10);
       expect(base.intersects(test)).not.to.be.true;
     });
+
+    it('returns true when base rect overlaps test rect only on top edge', () => {
+      let test = new Rectangle(left - 10, top + 10, w + 20, h);
+      expect(base.intersects(test)).to.be.true;
+    });
+    it('returns true when test rect overlaps base rect only on top edge', () => {
+      let test = new Rectangle(left + 10, top - 10, w - 20, h);
+      expect(base.intersects(test)).to.be.true;
+    });
     it('returns true when edges line up on the top', () => {
       let test = new Rectangle(cx, top - 10, 20, 20);
       expect(base.intersects(test)).to.be.true;
@@ -150,6 +177,15 @@ describe('Rectangle', () => {
     it('returns false when edges do not line up on the top', () => {
       let test = new Rectangle(cx, top - 10 - 1, 10, 10);
       expect(base.intersects(test)).not.to.be.true;
+    });
+
+    it('returns true when base rect overlaps test rect only on bottom edge', () => {
+      let test = new Rectangle(left - 10, top - 10, w + 20, h);
+      expect(base.intersects(test)).to.be.true;
+    });
+    it('returns true when test rect overlaps base rect only on bottom edge', () => {
+      let test = new Rectangle(left + 10, top + 10, w - 20, h);
+      expect(base.intersects(test)).to.be.true;
     });
     it('returns true when edges line up on the bottom', () => {
       let test = new Rectangle(cx, bottom + 10, 20, 20);
