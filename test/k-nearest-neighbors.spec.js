@@ -94,7 +94,7 @@ describe('K Nearest Neighbors', () => {
 
     expect(qt.closest(point, 100000).length).to.equal(100000);
   });
-  it('Stupid numnber of points', () => {
+  it('Stupid number of points', () => {
     const rect = new Rectangle(500, 500, 1000, 1000);
     let qt = new QuadTree(rect, 100);
 
@@ -107,5 +107,5 @@ describe('K Nearest Neighbors', () => {
     const point = new Point(500, 500);
 
     expect(qt.closest(point, 10).length).to.equal(10);
-  });
+  }).timeout(5000); // extend timeout
 });
