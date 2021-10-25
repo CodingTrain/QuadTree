@@ -11,11 +11,17 @@ class Point {
     this.userData = data;
   }
 
-  // Pythagorus: a^2 = b^2 + c^2
-  distanceFrom(other) {
+  // Skips Math.sqrt for faster comparisons
+  sqDistanceFrom(other) {
     const dx = other.x - this.x;
     const dy = other.y - this.y;
-    return Math.sqrt(dx * dx + dy * dy);
+
+    return dx * dx + dy * dy;
+  }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceFrom(other) {
+    return Math.sqrt(this.sqDistanceFrom(other));
   }
 }
 
@@ -80,11 +86,17 @@ class Rectangle {
     );
   }
 
-  distanceFrom(point) {
+  // Skips Math.sqrt for faster comparisons
+  sqDistanceFrom(point) {
     const dx = this.xDistanceFrom(point);
     const dy = this.yDistanceFrom(point);
 
-    return Math.sqrt(dx * dx + dy * dy);
+    return dx * dx + dy * dy;
+  }
+
+  // Pythagorus: a^2 = b^2 + c^2
+  distanceFrom(point) {
+    return Math.sqrt(this.sqDistanceFrom(point));
   }
 }
 
@@ -327,41 +339,42 @@ class QuadTree {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    return this.kNearest(searchPoint, maxCount, maxDistance, 0, 0).found;
+    return this.kNearest(searchPoint, maxCount, maxDistance ** 2, 0, 0).found;
   }
 
-  kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar) {
+  kNearest(searchPoint, maxCount, sqMaxDist, furthestSqDist, foundSoFar) {
     let found = [];
 
-    this.children.sort((a, b) => a.boundary.distanceFrom(searchPoint) - b.boundary.distanceFrom(searchPoint))
+    this.children.sort((a, b) => a.boundary.sqDistanceFrom(searchPoint) - b.boundary.sqDistanceFrom(searchPoint))
       .forEach((child) => {
-        const distance = child.boundary.distanceFrom(searchPoint);
-        if (distance > maxDistance) {
+        const sqDist = child.boundary.sqDistanceFrom(searchPoint);
+        if (sqDist > sqMaxDist) {
           return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
-          const result = child.kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
+        } else if (foundSoFar < maxCount || sqDist < furthestSqDist) {
+          const result = child.kNearest(searchPoint, maxCount, sqMaxDist, furthestSqDist, foundSoFar);
           const childPoints = result.found;
           found = found.concat(childPoints);
           foundSoFar += childPoints.length;
-          furthestDistance = result.furthestDistance;
+          furthestSqDist = result.furthestSqDist;
         }
       });
 
-    this.points.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint))
+    this.points
+      .sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint))
       .forEach((p) => {
-        const distance = p.distanceFrom(searchPoint);
-        if (distance > maxDistance) {
+        const sqDist = p.sqDistanceFrom(searchPoint);
+        if (sqDist > sqMaxDist) {
           return;
-        } else if (foundSoFar < maxCount || distance < furthestDistance) {
+        } else if (foundSoFar < maxCount || sqDist < furthestSqDist) {
           found.push(p);
-          furthestDistance = Math.max(distance, furthestDistance);
+          furthestSqDist = Math.max(sqDist, furthestSqDist);
           foundSoFar++;
         }
       });
 
     return {
-      found: found.sort((a, b) => a.distanceFrom(searchPoint) - b.distanceFrom(searchPoint)).slice(0, maxCount),
-      furthestDistance
+      found: found.sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint)).slice(0, maxCount),
+      furthestDistance: furthestSqDist ** 2,
     };
   }
 
@@ -380,12 +393,16 @@ class QuadTree {
     let right = Math.max(this.boundary.right, other.boundary.right);
     let top = Math.min(this.boundary.top, other.boundary.top);
     let bottom = Math.max(this.boundary.bottom, other.boundary.bottom);
+
     let height = bottom - top;
     let width = right - left;
+
     let midX = left + width / 2;
     let midY = top + height / 2;
+
     let boundary = new Rectangle(midX, midY, width, height);
     let result = new QuadTree(boundary, capacity);
+
     this.forEach(point => result.insert(point));
     other.forEach(point => result.insert(point));
 
