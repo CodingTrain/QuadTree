@@ -11,7 +11,7 @@ class Point {
     this.userData = data;
   }
 
-  // Skips Math.sqrt for faster performance
+  // Skips Math.sqrt for faster comparisons
   sqDistanceFrom(other) {
     const dx = other.x - this.x;
     const dy = other.y - this.y;
@@ -86,7 +86,7 @@ class Rectangle {
     );
   }
 
-  // Skips Math.sqrt for faster performance
+  // Skips Math.sqrt for faster comparisons
   sqDistanceFrom(point) {
     const dx = this.xDistanceFrom(point);
     const dy = this.yDistanceFrom(point);
@@ -375,12 +375,11 @@ class QuadTree {
       throw TypeError("Method 'closest' needs a point");
     }
 
-    return this.kNearest(searchPoint, maxCount, maxDistance, 0, 0).found;
+    return this.kNearest(searchPoint, maxCount, maxDistance ** 2, 0, 0).found;
   }
 
-  kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar) {
+  kNearest(searchPoint, maxCount, sqMaxDistance, furthestSqDistance, foundSoFar) {
     let found = [];
-    const sqMaxDistance = maxDistance ** 2;
 
     if (this.divided) {
       this.children
@@ -389,12 +388,12 @@ class QuadTree {
           const sqDistance = child.boundary.sqDistanceFrom(searchPoint);
           if (sqDistance > sqMaxDistance) {
             return;
-          } else if (foundSoFar < maxCount || sqDistance < furthestDistance) {
-            const result = child.kNearest(searchPoint, maxCount, maxDistance, furthestDistance, foundSoFar);
+          } else if (foundSoFar < maxCount || sqDistance < furthestSqDistance) {
+            const result = child.kNearest(searchPoint, maxCount, sqMaxDistance, furthestSqDistance, foundSoFar);
             const childPoints = result.found;
             found = found.concat(childPoints);
             foundSoFar += childPoints.length;
-            furthestDistance = result.furthestDistance;
+            furthestSqDistance = result.furthestSqDistance;
           }
         });
     } else {
@@ -404,9 +403,9 @@ class QuadTree {
           const sqDistance = p.sqDistanceFrom(searchPoint);
           if (sqDistance > sqMaxDistance) {
             return;
-          } else if (foundSoFar < maxCount || sqDistance < furthestDistance) {
+          } else if (foundSoFar < maxCount || sqDistance < furthestSqDistance) {
             found.push(p);
-            furthestDistance = Math.max(sqDistance, furthestDistance);
+            furthestSqDistance = Math.max(sqDistance, furthestSqDistance);
             foundSoFar++;
           }
         });
@@ -414,7 +413,7 @@ class QuadTree {
 
     return {
       found: found.sort((a, b) => a.sqDistanceFrom(searchPoint) - b.sqDistanceFrom(searchPoint)).slice(0, maxCount),
-      furthestDistance: Math.sqrt(furthestDistance),
+      furthestSqDistance: Math.sqrt(furthestSqDistance),
     };
   }
 
@@ -434,12 +433,16 @@ class QuadTree {
     let right = Math.max(this.boundary.right, other.boundary.right);
     let top = Math.min(this.boundary.top, other.boundary.top);
     let bottom = Math.max(this.boundary.bottom, other.boundary.bottom);
+
     let height = bottom - top;
     let width = right - left;
+
     let midX = left + width / 2;
     let midY = top + height / 2;
+
     let boundary = new Rectangle(midX, midY, width, height);
     let result = new QuadTree(boundary, capacity);
+
     this.forEach(point => result.insert(point));
     other.forEach(point => result.insert(point));
 
