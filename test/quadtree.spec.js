@@ -162,43 +162,44 @@ describe('QuadTree', () => {
     });
     describe('when subdivided', () => {
       beforeEach(() => {
-        quadtree.insert(new Point(100,200));
-        quadtree.insert(new Point(100,200));
-        quadtree.insert(new Point(100,200));
-        quadtree.insert(new Point(100,200));
+        // one for each quarter
+        quadtree.insert(new Point(100 - 5,200 - 5));
+        quadtree.insert(new Point(100 + 5,200 - 5));
+        quadtree.insert(new Point(100 - 5,200 + 5));
+        quadtree.insert(new Point(100 + 5,200 + 5));
       });
       it('correctly adds to northwest', () => {
         quadtree.insert(new Point(100 - 10, 200 - 10));
-        expect(quadtree.northwest.points).to.have.length(1);
+        expect(quadtree.northwest.points).to.have.length(2);
       });
       it('returns true when added to northwest', () => {
         expect(quadtree.insert(new Point(100 - 10, 200 - 10))).to.be.true;
       });
       it('correctly adds to northeast', () => {
-        quadtree.insert(new Point(100 + 5, 200 - 10));
-        expect(quadtree.northeast.points).to.have.length(1);
+        quadtree.insert(new Point(100 + 10, 200 - 10));
+        expect(quadtree.northeast.points).to.have.length(2);
       });
       it('returns true when added to northeast', () => {
-        expect(quadtree.insert(new Point(100 + 5, 200 - 10))).to.be.true;
+        expect(quadtree.insert(new Point(100 + 10, 200 - 10))).to.be.true;
       });
       it('correctly adds to southwest', () => {
         quadtree.insert(new Point(100 - 10, 200 + 10));
-        expect(quadtree.southwest.points).to.have.length(1);
+        expect(quadtree.southwest.points).to.have.length(2);
       });
       it('returns true when added to southwest', () => {
         expect(quadtree.insert(new Point(100 - 10, 200 + 10))).to.be.true;
       });
       it('correctly adds to southeast', () => {
-        quadtree.insert(new Point(100 + 5, 200 + 10));
-        expect(quadtree.southeast.points).to.have.length(1);
+        quadtree.insert(new Point(100 + 10, 200 + 10));
+        expect(quadtree.southeast.points).to.have.length(2);
       });
       it('returns true when added to southeast', () => {
-        expect(quadtree.insert(new Point(100 + 5, 200 + 10))).to.be.true;
+        expect(quadtree.insert(new Point(100 + 10, 200 + 10))).to.be.true;
       });
       it('does not trigger multiple subdivisions', () => {
-        quadtree.insert(new Point(100 + 5, 200 + 10));
+        quadtree.insert(new Point(100 + 10, 200 + 10));
         let temp = quadtree.northeast;
-        quadtree.insert(new Point(100 + 5, 200 + 10));
+        quadtree.insert(new Point(100 + 10, 200 + 10));
         expect(quadtree.northeast).to.equal(temp);
       });
     });
