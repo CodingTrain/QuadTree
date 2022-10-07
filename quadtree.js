@@ -26,11 +26,12 @@ class Point {
 }
 
 class Rectangle {
-  constructor(x, y, w, h) {
+  constructor(x, y, w, h, data) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+
     this.left = x - w / 2;
     this.right = x + w / 2;
     this.top = y - h / 2;
@@ -179,6 +180,18 @@ class QuadTree {
       ];
     } else {
       return [];
+    }
+  }
+
+  clear() {
+    this.points = [];
+
+    if (this.divided) {
+      this.divided = false;
+      delete this.northwest;
+      delete this.northeast;
+      delete this.southwest;
+      delete this.southeast;
     }
   }
 
@@ -370,6 +383,18 @@ class QuadTree {
     return found;
   }
 
+  deleteInRange(range) {
+    if (this.divided) {
+      this.northwest.deleteInRange(range);
+      this.northeast.deleteInRange(range);
+      this.southwest.deleteInRange(range);
+      this.southeast.deleteInRange(range);
+    }
+
+    // Delete points with range
+    this.points = this.points.filter(point => !range.contains(point));
+  }
+
   closest(searchPoint, maxCount = 1, maxDistance = Infinity) {
     if (typeof searchPoint === "undefined") {
       throw TypeError("Method 'closest' needs a point");
@@ -427,6 +452,18 @@ class QuadTree {
     } else {
       this.points.forEach(fn);
     }
+  }
+
+  filter(fn) {
+    let filtered = new QuadTree(this.boundary, this.capacity);
+
+    this.forEach((point) => {
+      if (fn(point)) {
+        filtered.insert(point);
+      }
+    });
+
+    return filtered;
   }
 
   merge(other, capacity) {
